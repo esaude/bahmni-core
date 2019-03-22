@@ -90,7 +90,7 @@ public class BahmniPatientProfileResource extends DelegatingCrudResource<Patient
                 identifierProperties.remove("identifierPrefix");
 
                 final String identifier = String.valueOf(identifierProperties.get("identifier"));
-                boolean isRegistrationIDNumeric = identifier.replace(identifierPrefix, "").matches("[0-9]+");
+                boolean isRegistrationIDNumeric = false;
 
                 if (identifierProperties.get("identifier") != null && !Objects.equals(identifierPrefix, "") && isRegistrationIDNumeric) {
                     long givenRegistrationNumber = Long.parseLong(identifier.replace(identifierPrefix, ""));
