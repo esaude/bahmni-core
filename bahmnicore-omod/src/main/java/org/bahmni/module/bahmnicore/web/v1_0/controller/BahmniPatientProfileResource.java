@@ -202,7 +202,7 @@ public class BahmniPatientProfileResource extends DelegatingCrudResource<Patient
         return delegate;
     }
 
-    private PatientProfile mapForUpdatePatient(String uuid, SimpleObject propertiesToUpdate) {
+    private PatientProfile mapForUpdatePatient(String uuid, SimpleObject propertiesToUpdate) throws Exception {
         if (propertiesToUpdate.get("patient") == null || !(propertiesToUpdate.get("patient") instanceof Map)) {
             throw new ConversionException("The patient property is missing");
         }
@@ -214,6 +214,25 @@ public class BahmniPatientProfileResource extends DelegatingCrudResource<Patient
         List<Object> identifiers = (List<Object>) ((Map) propertiesToUpdate.get("patient")).get("identifiers");
         for (Object identifier : identifiers) {
             LinkedHashMap identifierProperties = (LinkedHashMap) identifier;
+            Object identifierSource = identifierProperties.get("identifierSourceUuid");
+
+            if (identifierSource != null) {
+                String identifierPrefix = String.valueOf(identifierProperties.get("identifierPrefix"));
+                String identifierSourceUuid = String.valueOf(identifierProperties.get("identifierSourceUuid"));
+                identifierProperties.remove("identifierSourceUuid");
+                identifierProperties.remove("identifierPrefix");
+
+                final String identifierNew = String.valueOf(identifierProperties.get("identifier"));
+                boolean isRegistrationIDNumeric = identifierNew.replace(identifierPrefix, "").matches("[0-9]+");
+
+                if (identifierProperties.get("identifier") != null && !Objects.equals(identifierPrefix, "") && isRegistrationIDNumeric) {
+                    long givenRegistrationNumber = Long.parseLong(identifierNew.replace(identifierPrefix, ""));
+                    long latestRegistrationNumber = Long.parseLong(identifierSourceServiceWrapper.getSequenceValueUsingIdentifierSourceUuid(identifierSourceUuid));
+                } else if (identifierProperties.get("identifier") == null) {
+                    String generatedIdentifier = identifierSourceServiceWrapper.generateIdentifierUsingIdentifierSourceUuid(identifierSourceUuid, "");
+                    identifierProperties.put("identifier", generatedIdentifier);
+                }
+            }
             identifierProperties.remove("identifierSourceUuid");
             identifierProperties.remove("identifierPrefix");
             PatientIdentifier patientIdentifier = (PatientIdentifier) ConversionUtil.convert(identifierProperties, PatientIdentifier.class);
