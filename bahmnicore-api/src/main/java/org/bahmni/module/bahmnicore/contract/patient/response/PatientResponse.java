@@ -1,7 +1,6 @@
 package org.bahmni.module.bahmnicore.contract.patient.response;
 
 
-
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.JsonSerializer;
 import org.codehaus.jackson.map.SerializerProvider;
@@ -31,6 +30,9 @@ public class PatientResponse {
     private String customAttribute;
     private Object patientProgramAttributeValue;
     private Boolean hasBeenAdmitted;
+
+
+    private Boolean birthdateEstimated;
 
     public String getAge() {
         if (birthDate == null)
@@ -73,7 +75,7 @@ public class PatientResponse {
         this.uuid = uuid;
     }
 
-    @JsonSerialize(using=JsonDateSerializer.class)
+    @JsonSerialize(using = JsonDateSerializer.class)
     public Date getBirthDate() {
         return birthDate;
     }
@@ -194,13 +196,18 @@ public class PatientResponse {
         this.personId = personId;
     }
 
+    public Boolean getBirthdateEstimated() { return birthdateEstimated; }
+
+    public void setBirthdateEstimated(Boolean birthdateEstimated) { this.birthdateEstimated = birthdateEstimated; }
+
     /**
      * Used to serialize Java.util.Date, which is not a common JSON
      * type, so we have to create a custom serialize method;
      */
     @Component
-    public static  class JsonDateSerializer extends JsonSerializer<Date> {
+    public static class JsonDateSerializer extends JsonSerializer<Date> {
         private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
         @Override
         public void serialize(Date date, JsonGenerator gen, SerializerProvider provider)
                 throws IOException {

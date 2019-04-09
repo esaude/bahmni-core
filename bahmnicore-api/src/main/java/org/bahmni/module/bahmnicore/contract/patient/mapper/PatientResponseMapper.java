@@ -54,6 +54,7 @@ public class PatientResponseMapper {
         patientResponse.setMiddleName(patient.getMiddleName());
         patientResponse.setFamilyName(patient.getFamilyName());
         patientResponse.setGender(patient.getGender());
+        patientResponse.setBirthdateEstimated(patient.getBirthdateEstimated());
         PatientIdentifier primaryIdentifier = patient.getPatientIdentifier();
         patientResponse.setIdentifier(primaryIdentifier.getIdentifier());
         patientResponse.setPatientProgramAttributeValue(programAttributeValue);

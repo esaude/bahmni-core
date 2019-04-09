@@ -27,6 +27,7 @@ public class PatientSearchBuilder {
 			"p.gender as gender, " +
 			"p.birthdate as birthDate, " +
 			"p.death_date as deathDate, " +
+			"p.birthdate_estimated as birthdateEstimated, " +
 			"p.date_created as dateCreated, " +
 			"v.uuid as activeVisitUuid, " +
 			"primary_identifier.identifier as identifier, " +
@@ -140,7 +141,6 @@ public class PatientSearchBuilder {
 	public SQLQuery buildSqlQuery(Integer limit, Integer offset){
 		String joinWithVisit = join.replace(VISIT_JOIN, visitJoin);
 		String query = select + from + joinWithVisit + where + GROUP_BY_KEYWORD + groupBy  + orderBy;
-
 		SQLQuery sqlQuery = sessionFactory.getCurrentSession()
 				.createSQLQuery(query)
 				.addScalar("uuid", StandardBasicTypes.STRING)
@@ -151,6 +151,7 @@ public class PatientSearchBuilder {
 				.addScalar("familyName", StandardBasicTypes.STRING)
 				.addScalar("gender", StandardBasicTypes.STRING)
 				.addScalar("birthDate", StandardBasicTypes.DATE)
+				.addScalar("birthdateEstimated", StandardBasicTypes.BOOLEAN)
 				.addScalar("deathDate", StandardBasicTypes.DATE)
 				.addScalar("dateCreated", StandardBasicTypes.TIMESTAMP)
 				.addScalar("activeVisitUuid", StandardBasicTypes.STRING)
