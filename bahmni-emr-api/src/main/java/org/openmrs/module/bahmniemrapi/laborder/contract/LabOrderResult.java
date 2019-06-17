@@ -94,7 +94,7 @@ public class LabOrderResult {
     public void setAccessionNotes(List<AccessionNote> accessionNotes) {
         this.accessionNotes = accessionNotes;
     }
-
+    
     public String getTestName() {
         return testName;
     }

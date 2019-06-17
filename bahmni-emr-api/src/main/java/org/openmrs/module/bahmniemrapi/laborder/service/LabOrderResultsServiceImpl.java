@@ -13,8 +13,13 @@ import org.openmrs.module.bahmniemrapi.laborder.contract.LabOrderResult;
 import org.openmrs.module.bahmniemrapi.laborder.contract.LabOrderResults;
 import org.openmrs.module.emrapi.encounter.EncounterTransactionMapper;
 import org.openmrs.module.emrapi.encounter.domain.EncounterTransaction;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import org.openmrs.ConceptName;
+import org.openmrs.api.context.Context;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -231,6 +236,12 @@ public class LabOrderResultsServiceImpl implements LabOrderResultsService {
         return obsGroup.getConcept().isSet();
     }
 
+    public static ConceptName getConceptName(EncounterTransaction.Concept name) {
+        ConceptName conceptName = name.getConcept();
+        conceptName.setLocale(Context.getLocale());
+        return conceptName;
+    }
+
     private LabOrderResult createLabOrderResult(EncounterTransaction.Observation observation, EncounterTransaction.Order testOrder, Map<String, Encounter> encounterTestOrderMap, Map<String, Encounter> encounterObservationMap, Map<String, List<AccessionNote>> encounterToAccessionNotesMap) {
         LabOrderResult labOrderResult = new LabOrderResult();
         Encounter orderEncounter = encounterTestOrderMap.get(observation.getOrderUuid());
@@ -242,7 +253,8 @@ public class LabOrderResultsServiceImpl implements LabOrderResultsService {
         labOrderResult.setProvider(getProviderName(observation, encounterObservationMap));
         labOrderResult.setResultDateTime(observation.getObservationDateTime());
         labOrderResult.setTestUuid(observation.getConceptUuid());
-        labOrderResult.setTestName(observation.getConcept().getName());
+        // labOrderResult.setTestName(observation.getConcept().getName());
+        labOrderResult.setTestName(observation.getConceptName());
         labOrderResult.setResult(resultValue != null ? resultValue.toString() : null);
         labOrderResult.setAbnormal((Boolean) getValue(observation, LAB_ABNORMAL));
         labOrderResult.setMinNormal((Double) getValue(observation, LAB_MINNORMAL));
