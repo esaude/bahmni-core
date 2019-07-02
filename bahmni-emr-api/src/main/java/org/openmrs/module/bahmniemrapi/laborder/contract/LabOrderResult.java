@@ -1,5 +1,10 @@
 package org.openmrs.module.bahmniemrapi.laborder.contract;
 
+import org.openmrs.Concept;
+import org.openmrs.ConceptName;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
+
 import org.openmrs.module.bahmniemrapi.accessionnote.contract.AccessionNote;
 
 import java.util.Date;
@@ -27,11 +32,12 @@ public class LabOrderResult {
     private Boolean referredOut;
     private Date resultDateTime;
     private String uploadedFileName;
+    private ConceptService conceptService;
 
     public LabOrderResult() {
     }
 
-    public LabOrderResult(String orderUuid, String action, String accessionUuid, Date accessionDateTime, String testName, String testUnitOfMeasurement, Double minNormal, Double maxNormal, String result, Boolean abnormal, Boolean referredOut, String uploadedFileName, List<AccessionNote> accessionNotes) {
+    public LabOrderResult(String orderUuid, String action, String accessionUuid, Date accessionDateTime, String testName, String testUnitOfMeasurement, Double minNormal, Double maxNormal, String result, Boolean abnormal, Boolean referredOut, String uploadedFileName, List<AccessionNote> accessionNotes, ConceptService conceptService) {
         this.orderUuid = orderUuid;
         this.action = action;
         this.accessionUuid = accessionUuid;
@@ -94,8 +100,11 @@ public class LabOrderResult {
     public void setAccessionNotes(List<AccessionNote> accessionNotes) {
         this.accessionNotes = accessionNotes;
     }
-    
+
     public String getTestName() {
+        Concept obsConcept = conceptService.getConceptByName(testName);
+        ConceptName shortName = obsConcept.getShortNameInLocale(Context.getLocale());
+        testName = shortName.toString();
         return testName;
     }
 

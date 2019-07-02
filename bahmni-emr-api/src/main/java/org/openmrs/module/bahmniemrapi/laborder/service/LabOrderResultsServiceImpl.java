@@ -17,10 +17,6 @@ import org.openmrs.module.emrapi.encounter.domain.EncounterTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import org.openmrs.ConceptName;
-import org.openmrs.api.context.Context;
-
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -209,7 +205,7 @@ public class LabOrderResultsServiceImpl implements LabOrderResultsService {
             } else if (testOrder.getDateStopped() == null) {
                 EncounterTransaction.Concept orderConcept = testOrder.getConcept();
                 Encounter orderEncounter = encounterTestOrderMap.get(testOrder.getUuid());
-                LabOrderResult labOrderResult = new LabOrderResult(testOrder.getUuid(), testOrder.getAction(), orderEncounter.getUuid(), orderEncounter.getEncounterDatetime(), orderConcept.getName(), orderConcept.getUnits(), null, null, null, null, false, null, null);
+                LabOrderResult labOrderResult = new LabOrderResult(testOrder.getUuid(), testOrder.getAction(), orderEncounter.getUuid(), orderEncounter.getEncounterDatetime(), orderConcept.getName(), orderConcept.getUnits(), null, null, null, null, false, null, null, null);
                 labOrderResult.setVisitStartTime(orderEncounter.getVisit().getStartDatetime());
                 labOrderResults.add(labOrderResult);
             }
@@ -235,13 +231,7 @@ public class LabOrderResultsServiceImpl implements LabOrderResultsService {
     private boolean isPanel(EncounterTransaction.Observation obsGroup) {
         return obsGroup.getConcept().isSet();
     }
-
-    public static ConceptName getConceptName(EncounterTransaction.Concept name) {
-        ConceptName conceptName = name.getConcept();
-        conceptName.setLocale(Context.getLocale());
-        return conceptName;
-    }
-
+    
     private LabOrderResult createLabOrderResult(EncounterTransaction.Observation observation, EncounterTransaction.Order testOrder, Map<String, Encounter> encounterTestOrderMap, Map<String, Encounter> encounterObservationMap, Map<String, List<AccessionNote>> encounterToAccessionNotesMap) {
         LabOrderResult labOrderResult = new LabOrderResult();
         Encounter orderEncounter = encounterTestOrderMap.get(observation.getOrderUuid());
@@ -253,8 +243,7 @@ public class LabOrderResultsServiceImpl implements LabOrderResultsService {
         labOrderResult.setProvider(getProviderName(observation, encounterObservationMap));
         labOrderResult.setResultDateTime(observation.getObservationDateTime());
         labOrderResult.setTestUuid(observation.getConceptUuid());
-        // labOrderResult.setTestName(observation.getConcept().getName());
-        labOrderResult.setTestName(observation.getConceptName());
+        labOrderResult.setTestName(observation.getConcept().getName());
         labOrderResult.setResult(resultValue != null ? resultValue.toString() : null);
         labOrderResult.setAbnormal((Boolean) getValue(observation, LAB_ABNORMAL));
         labOrderResult.setMinNormal((Double) getValue(observation, LAB_MINNORMAL));
