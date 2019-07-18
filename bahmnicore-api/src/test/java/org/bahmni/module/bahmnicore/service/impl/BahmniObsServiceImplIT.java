@@ -85,7 +85,7 @@ public class BahmniObsServiceImplIT extends BaseIntegrationTest {
     public void shouldReturnLatestObsForEachConcept() {
         Concept vitalsConcept = conceptService.getConceptByName("Vitals");
         Collection<BahmniObservation> bahmniObservations = bahmniObsService.getLatest("86526ed5-3c11-11de-a0ba-001e378eb67a",
-                Arrays.asList(vitalsConcept), 3, null, false, null);
+                Arrays.asList(vitalsConcept), 3, null, false, null,"en");
         BahmniObservation vitalObservation = bahmniObservations.iterator().next();
         Collection<BahmniObservation> vitalsGroupMembers = vitalObservation.getGroupMembers();
         assertEquals(2, vitalsGroupMembers.size());
@@ -102,9 +102,9 @@ public class BahmniObsServiceImplIT extends BaseIntegrationTest {
         Concept sittingConcept = conceptService.getConceptByName("Vitals");
         //Latest limited by last two visits.
         Collection<BahmniObservation> bahmniObservations = bahmniObsService.getLatest("86526ed5-3c11-11de-a0ba-001e378eb67a",
-                Arrays.asList(sittingConcept), 2, null, false, null);
+                Arrays.asList(sittingConcept), 2, null, false, null,"en");
         assertEquals(0, bahmniObservations.size());
-        bahmniObservations = bahmniObsService.getLatest("86526ed5-3c11-11de-a0ba-001e378eb67a", Arrays.asList(sittingConcept), 3, null, false, null);
+        bahmniObservations = bahmniObsService.getLatest("86526ed5-3c11-11de-a0ba-001e378eb67a", Arrays.asList(sittingConcept), 3, null, false, null,"en");
         assertEquals(1, bahmniObservations.size());
 
         BahmniObservation sittingObservation = bahmniObservations.iterator().next();

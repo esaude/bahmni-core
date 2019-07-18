@@ -48,6 +48,7 @@ public class BahmniObservationsController extends BaseRestController {
     public Collection<BahmniObservation> get(@RequestParam(value = "patientUuid", required = true) String patientUUID,
                                              @RequestParam(value = "concept", required = true) List<String> rootConceptNames,
                                              @RequestParam(value = "scope", required = false) String scope,
+                                             @RequestParam(value = "locale", required = false) String locale,
                                              @RequestParam(value = "numberOfVisits", required = false) Integer numberOfVisits,
                                              @RequestParam(value = "obsIgnoreList", required = false) List<String> obsIgnoreList,
                                              @RequestParam(value = "filterObsWithOrders", required = false, defaultValue = "true") Boolean filterObsWithOrders ) throws ParseException {
@@ -56,7 +57,7 @@ public class BahmniObservationsController extends BaseRestController {
 
         Collection<BahmniObservation> observations;
         if (ObjectUtils.equals(scope, LATEST)) {
-            observations = bahmniObsService.getLatest(patientUUID, rootConcepts, numberOfVisits, obsIgnoreList, filterObsWithOrders, null);
+            observations = bahmniObsService.getLatest(patientUUID, rootConcepts, numberOfVisits, obsIgnoreList, filterObsWithOrders, null, locale);
         } else if (ObjectUtils.equals(scope, INITIAL)) {
             observations = bahmniObsService.getInitial(patientUUID, rootConcepts, numberOfVisits, obsIgnoreList, filterObsWithOrders, null);
         } else {

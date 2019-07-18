@@ -129,6 +129,73 @@ public class ObsDaoImpl implements ObsDao {
         return queryToGetObservations.list();
     }
 
+
+    public List<Obs> getObsByPatientAndVisitAndLocale(String patientUuid, List<String> conceptNames, List<Integer> listOfVisitIds,
+                                             Integer limit, OrderBy sortOrder, List<String> obsIgnoreList, Boolean filterOutOrderObs, Order order, Date startDate, Date endDate, String locale) {
+
+        StringBuilder query = new StringBuilder("select obs from Obs as obs, ConceptName as cn " +
+                " where obs.person.uuid = :patientUuid " +
+                " and cn.concept = obs.concept.conceptId " +
+                " and cn.name in (:conceptNames) " +
+                " and cn.locale = :locale " +
+                " and cn.conceptNameType = :conceptNameType " +
+                " and cn.voided = false and obs.voided = false ");
+
+        if (CollectionUtils.isNotEmpty(listOfVisitIds)) {
+            query.append(" and obs.encounter.visit.visitId in (:listOfVisitIds) ");
+        }
+        if (startDate != null) {
+            query.append(" and obs.obsDatetime >= :startDate ");
+        }
+        if (endDate != null) {
+            query.append(" and obs.obsDatetime <= :endDate ");
+        }
+
+        if (CollectionUtils.isNotEmpty(obsIgnoreList)) {
+            query.append(" and cn.name not in (:obsIgnoreList) ");
+        }
+        if (filterOutOrderObs) {
+            query.append(" and obs.order.orderId is null ");
+        }
+        if (null != order) {
+            query.append(" and obs.order = (:order) ");
+        }
+        if (sortOrder == OrderBy.ASC) {
+            query.append(" order by obs.obsDatetime asc ");
+        } else {
+            query.append(" order by obs.obsDatetime desc ");
+        }
+
+
+        Query queryToGetObservations = sessionFactory.getCurrentSession().createQuery(query.toString());
+        queryToGetObservations.setMaxResults(limit);
+        queryToGetObservations.setString("patientUuid", patientUuid);
+        queryToGetObservations.setParameterList("conceptNames", conceptNames);
+        queryToGetObservations.setParameter("conceptNameType", ConceptNameType.FULLY_SPECIFIED);
+        if(locale == null || locale == ""){
+            queryToGetObservations.setString("locale", Context.getLocale().getLanguage());
+        }else{
+            queryToGetObservations.setString("locale", locale);
+        }
+        if (null != obsIgnoreList && obsIgnoreList.size() > 0) {
+            queryToGetObservations.setParameterList("obsIgnoreList", obsIgnoreList);
+        }
+        if (null != listOfVisitIds && listOfVisitIds.size() > 0) {
+            queryToGetObservations.setParameterList("listOfVisitIds", listOfVisitIds);
+        }
+        if (null != order) {
+            queryToGetObservations.setParameter("order", order);
+        }
+        if (startDate != null) {
+            queryToGetObservations.setParameter("startDate", startDate);
+        }
+        if (endDate != null) {
+            queryToGetObservations.setParameter("endDate", endDate);
+        }
+        return queryToGetObservations.list();
+    }
+
+
     @Override
     public List<Obs> getLatestObsFor(String patientUuid, String conceptName, Integer limit) {
         Query queryToGetObservations = sessionFactory.getCurrentSession().createQuery(
