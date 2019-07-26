@@ -30,6 +30,7 @@ public class BahmniEncounterTransaction {
     private String visitType;
     private String patientId;
     private String reason;
+    private String locale;
 
 
     public BahmniEncounterTransaction() {
@@ -382,6 +383,14 @@ public class BahmniEncounterTransaction {
 
     public boolean isAssociatedToPatientProgram() {
         return StringUtils.isNotBlank(getPatientProgramUuid());
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 }
 
