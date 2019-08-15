@@ -2,6 +2,7 @@ package org.bahmni.module.bahmnicore.service.impl;
 
 import org.bahmni.module.bahmnicore.contract.patient.PatientDuplicateSearchParameters;
 import org.bahmni.module.bahmnicore.contract.patient.PatientSearchParameters;
+import org.bahmni.module.bahmnicore.contract.patient.PatientStatusBasedSearchParameters;
 import org.bahmni.module.bahmnicore.contract.patient.response.PatientConfigResponse;
 import org.bahmni.module.bahmnicore.contract.patient.response.PatientResponse;
 import org.bahmni.module.bahmnicore.dao.PatientDao;
@@ -102,5 +103,14 @@ public class BahmniPatientServiceImpl implements BahmniPatientService {
                 searchParameters.getStart(),
                 searchParameters.getGender(), searchParameters.getBirthDate(), searchParameters.getCustomAttribute(),searchParameters.getPatientAttributes(),searchParameters.getPatientSearchResultFields());
     }
+
+	@Override
+	public List<PatientResponse> search(PatientStatusBasedSearchParameters searchParameters) {
+		return patientDao.getStatusBasedPatients(
+                searchParameters.getName(),
+                searchParameters.getLength(),
+                searchParameters.getStart(),
+                searchParameters.getIdentifier());
+	}
 
 }
