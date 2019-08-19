@@ -4397,4 +4397,17 @@
         <comment>Override SQL query for Get Patient Details in Ward</comment>
         <sqlFile path="BahmniBMPatientListInWard.sql"/>
     </changeSet>
+     <changeSet id="2019083015065565111" author="Krishnan">
+        <comment>Add Portuguese locale for Bahmni Diagnosis Status, Bahmni Initial Diagnosis, Bahmni Diagnosis Revised</comment>
+        <sql>
+            INSERT INTO concept_name(concept_id,name,locale,locale_preferred,creator,date_created,concept_name_type,voided,voided_by,date_voided,void_reason,uuid,date_changed,changed_by)
+            values(49,'Bahmni Diagnosis Status','pt',1,0,'2019-08-19 07:21:44','FULLY_SPECIFIED',0,NULL,NULL,NULL,'d86f5dd8-e649-4097-8da7-012e25fc1c21',NULL,NULL);
+
+            INSERT INTO concept_name(concept_id,name,locale,locale_preferred,creator,date_created,concept_name_type,voided,voided_by,date_voided,void_reason,uuid,date_changed,changed_by)
+            values(50,'Bahmni Initial Diagnosis','pt',1,0,'2019-08-19 07:21:44','FULLY_SPECIFIED',0,NULL,NULL,NULL,'d96c93d3-edd6-48bb-86ef-058e4c6ac20f',NULL,NULL);
+
+            INSERT INTO concept_name(concept_id,name,locale,locale_preferred,creator,date_created,concept_name_type,voided,voided_by,date_voided,void_reason,uuid,date_changed,changed_by)
+            values(51,'Bahmni Diagnosis Revised','pt',1,0,'2019-08-19 07:21:44','FULLY_SPECIFIED',0,NULL,NULL,NULL,'71e6a2d4-28c1-4c53-9ec7-5ec650b06f9f',NULL,NULL);
+        </sql>
+    </changeSet>
 </databaseChangeLog>
