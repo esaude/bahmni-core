@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface DrugOrderRelationshipDao {
     DrugOrderRelationship saveOrUpdate(DrugOrderRelationship obsRelationship);
+    DrugOrder getDrugOrderByUuid(String uuid);
     DrugOrderRelationship getRelationById(int id);
     List<DrugOrderRelationship> getDrugOrdersByCategory(Concept category);
     List<DrugOrderRelationship> getDrugOrdersByTreatmentLine(Concept treatmentLine);

@@ -1,5 +1,6 @@
 package org.openmrs.module.bahmniemrapi.encountertransaction.impl;
 
+import org.bahmni.module.drugorderrelationship.dao.DrugOrderRelationshipDao;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -59,13 +60,16 @@ public class BahmniEncounterTransactionServiceImplTest {
     @Mock
     private BahmniVisitAttributeService bahmniVisitAttributeService;
 
+    @Mock
+    private DrugOrderRelationshipDao drugOrderRelationshipDao;
+
     private BahmniEncounterTransactionService bahmniEncounterTransactionService;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
         bahmniEncounterTransactionService = new BahmniEncounterTransactionServiceImpl(encounterService,null,encounterTransactionMapper,null,null, null,visitService,patientService
-                ,locationService,null,baseEncounterMatcher,bahmniVisitLocationService, bahmniVisitAttributeService);
+                ,locationService,null,baseEncounterMatcher,bahmniVisitLocationService, bahmniVisitAttributeService, drugOrderRelationshipDao);
 
     }
 

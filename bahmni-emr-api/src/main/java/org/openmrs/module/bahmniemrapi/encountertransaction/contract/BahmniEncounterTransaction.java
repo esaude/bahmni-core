@@ -1,6 +1,7 @@
 package org.openmrs.module.bahmniemrapi.encountertransaction.contract;
 
 import org.apache.commons.lang.StringUtils;
+import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationshipDTO;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.joda.time.DateTime;
@@ -31,6 +32,7 @@ public class BahmniEncounterTransaction {
     private String patientId;
     private String reason;
     private String locale;
+    private List<DrugOrderRelationshipDTO> drugOrderRelationships;
 
 
     public BahmniEncounterTransaction() {
@@ -334,6 +336,14 @@ public class BahmniEncounterTransaction {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public List<DrugOrderRelationshipDTO> getDrugOrderRelationships() {
+        return drugOrderRelationships;
+    }
+
+    public void setDrugOrderRelationships(List<DrugOrderRelationshipDTO> drugOrderRelationships) {
+        this.drugOrderRelationships = drugOrderRelationships;
     }
 
     public boolean hasPastDrugOrders() {

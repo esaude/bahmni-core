@@ -2,17 +2,18 @@ package org.openmrs.module.bahmniemrapi.encountertransaction.impl;
 
 
 import org.apache.commons.lang3.StringUtils;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
-import org.openmrs.Patient;
-import org.openmrs.Visit;
-import org.openmrs.VisitType;
+import org.bahmni.module.drugorderrelationship.dao.DrugOrderRelationshipDao;
+import org.bahmni.module.drugorderrelationship.dao.impl.DrugOrderRelationshipDaoImpl;
+import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationship;
+import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationshipDTO;
+import org.openmrs.*;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.bahmniemrapi.BahmniEmrAPIException;
 import org.openmrs.module.bahmniemrapi.encountertransaction.command.EncounterDataPostSaveCommand;
@@ -35,11 +36,7 @@ import org.openmrs.module.emrapi.encounter.domain.EncounterTransaction;
 import org.openmrs.module.emrapi.encounter.matcher.BaseEncounterMatcher;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Transactional
 public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService implements BahmniEncounterTransactionService {
@@ -52,6 +49,7 @@ public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService im
     private List<EncounterDataPostSaveCommand> encounterDataPostSaveCommands;
     private BahmniEncounterTransactionMapper bahmniEncounterTransactionMapper;
     private VisitService visitService;
+    private DrugOrderRelationshipDao drugOrderRelationshipDao;
     private PatientService patientService;
     private LocationService locationService;
     private ProviderService providerService;
@@ -71,7 +69,8 @@ public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService im
                                                  ProviderService providerService,
                                                  BaseEncounterMatcher encounterSessionMatcher,
                                                  BahmniVisitLocationService bahmniVisitLocationService,
-                                                 BahmniVisitAttributeService bahmniVisitAttributeService) {
+                                                 BahmniVisitAttributeService bahmniVisitAttributeService,
+                                                 DrugOrderRelationshipDao drugOrderRelationshipDao) {
 
         this.encounterService = encounterService;
         this.emrEncounterService = emrEncounterService;
@@ -86,6 +85,7 @@ public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService im
         this.encounterSessionMatcher = encounterSessionMatcher;
         this.bahmniVisitLocationService = bahmniVisitLocationService;
         this.bahmniVisitAttributeService = bahmniVisitAttributeService;
+        this.drugOrderRelationshipDao = drugOrderRelationshipDao;
     }
 
     @Override
@@ -125,6 +125,10 @@ public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService im
         setVisitLocationToEncounterTransaction(bahmniEncounterTransaction);
 
         EncounterTransaction encounterTransaction = emrEncounterService.save(bahmniEncounterTransaction.toEncounterTransaction());
+
+
+        handleDrugOrderRelationships(bahmniEncounterTransaction, encounterTransaction);
+
         //Get the saved encounter transaction from emr-api
         String encounterUuid = encounterTransaction.getEncounterUuid();
         Encounter currentEncounter = encounterService.getEncounterByUuid(encounterUuid);
@@ -136,6 +140,39 @@ public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService im
         }
         bahmniVisitAttributeService.save(currentEncounter);
         return bahmniEncounterTransactionMapper.map(updatedEncounterTransaction, includeAll);
+    }
+
+    private void handleDrugOrderRelationships(BahmniEncounterTransaction bahmniEncounterTransaction, EncounterTransaction encounterTransaction) {
+        List<DrugOrderRelationshipDTO> relationshipDTOList = bahmniEncounterTransaction.getDrugOrderRelationships();
+        List<EncounterTransaction.DrugOrder> orders = encounterTransaction.getDrugOrders();
+        List<DrugOrderRelationship> drugOrderRelationships = new ArrayList();
+
+        for(int i = 0; i < orders.size(); i++) {
+
+            for (int j = 0; j < relationshipDTOList.size(); j++) {
+
+                if(relationshipDTOList.get(j).getDrugUuid().equals(orders.get(i).getDrug().getUuid())){
+
+                    DrugOrderRelationshipDTO drugOrderRelationshipDTO = relationshipDTOList.get(j);
+
+                    Concept category = Context.getConceptService().getConceptByUuid(drugOrderRelationshipDTO.getCategoryUuid());
+                    Concept treatmentLine = Context.getConceptService().getConceptByUuid(drugOrderRelationshipDTO.getTreatmentLineUuid());
+                    DrugOrder drugOrder = drugOrderRelationshipDao.getDrugOrderByUuid(orders.get(i).getUuid());
+
+                    DrugOrderRelationship drugOrderRelationship = new DrugOrderRelationship();
+                    drugOrderRelationship.setCategory(category);
+                    drugOrderRelationship.setTreatmentLine(treatmentLine);
+                    drugOrderRelationship.setOrder(drugOrder);
+                    drugOrderRelationship.setCreator(Context.getAuthenticatedUser());
+                    drugOrderRelationships.add(drugOrderRelationship);
+                    drugOrderRelationshipDao.saveOrUpdate(drugOrderRelationship);
+
+                }
+
+            }
+        }
+
+
     }
 
     private void setEncounterTypeUuid(BahmniEncounterTransaction bahmniEncounterTransaction) {

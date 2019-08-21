@@ -40,6 +40,18 @@ public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
     }
 
 
+    @Override
+    @Transactional
+    public DrugOrder getDrugOrderByUuid (String uuid) {
+        Query query = sessionFactory.getCurrentSession().createQuery("from DrugOrder where uuid=:uuid");
+        query.setString("uuid",uuid);
+        List<DrugOrder> list = query.list();
+        if(list.size() != 0){
+            return list.get(0);
+        }
+        return null;
+    }
+
 
     @Override
     @Transactional
@@ -52,6 +64,8 @@ public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
         }
         return null;
     }
+
+
 
     @Override
     @Transactional
