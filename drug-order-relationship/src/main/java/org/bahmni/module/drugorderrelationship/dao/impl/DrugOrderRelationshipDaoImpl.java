@@ -1,10 +1,14 @@
 package org.bahmni.module.drugorderrelationship.dao.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bahmni.module.drugorderrelationship.dao.DrugOrderRelationshipDao;
 import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationship;
 
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Obs;
@@ -16,6 +20,7 @@ import java.util.List;
 
 @Component
 public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
+    protected static final Log log = LogFactory.getLog(DrugOrderRelationshipDaoImpl.class);
     /**
      * Hibernate session factory
      */
@@ -34,21 +39,44 @@ public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
 
     @Override
     @Transactional
-    public DrugOrderRelationship saveOrUpdate(DrugOrderRelationship obsRelationship) {
-        sessionFactory.getCurrentSession().saveOrUpdate(obsRelationship);
-        return obsRelationship;
+    public DrugOrderRelationship saveOrUpdate(DrugOrderRelationship drugRelationship) {
+       Session session= sessionFactory.getCurrentSession();
+       session.beginTransaction();
+       session.save(drugRelationship);
+        return drugRelationship;
+    }
+
+    @Override
+    @Transactional
+    public void saveAll(List<DrugOrderRelationship> drugRelationshipList) {
+        Session session= sessionFactory.getCurrentSession();
+        try {
+        for(int i = 0; i < drugRelationshipList.size(); i++){
+            session.save(drugRelationshipList.get(i));
+            session.flush();
+            session.clear();
+        }
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        log.error("DONE");
+
+
+
+
     }
 
 
     @Override
     @Transactional
-    public DrugOrder getDrugOrderByUuid (String uuid) {
-        Query query = sessionFactory.getCurrentSession().createQuery("from DrugOrder where uuid=:uuid");
-        query.setString("uuid",uuid);
+    public DrugOrder getDrugOrderById (int id) {
+        Query query = sessionFactory.getCurrentSession().createQuery("from DrugOrder where orderId=:id");
+        query.setInteger("id",id);
         List<DrugOrder> list = query.list();
         if(list.size() != 0){
             return list.get(0);
         }
+        log.error("****"+list);
         return null;
     }
 
@@ -62,6 +90,7 @@ public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
         if(list.size() != 0){
             return list.get(0);
         }
+        log.error("#####"+list);
         return null;
     }
 

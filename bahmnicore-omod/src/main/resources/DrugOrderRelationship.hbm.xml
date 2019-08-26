@@ -3,22 +3,22 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.bahmni.module.drugorderrelationship.model">
     <class name="DrugOrderRelationship" table="drug_order_relationship" batch-size="25">
-        <id name="id" type="int" column="drug_order_relationship_id" unsaved-value="0"></id>
+        <id name="id" type="int" column="drug_order_relationship_id" unsaved-value="null"></id>
 
 
         <property name="dateCreated" type="java.util.Date" column="date_created" length="19" not-null="true" />
 
-        <many-to-one name="creator" class="org.openmrs.User" column="creator" not-null="true"/>
+        <many-to-one name="creator" class="org.openmrs.User" column="creator" lazy="false"  cascade="none" not-null="true"/>
 
 
         <many-to-one name="order" class="org.openmrs.DrugOrder"
-                     column="drug_order_id" not-null="true"/>
+                     column="drug_order_id" not-null="true" lazy="false" cascade="none"/>
 
         <many-to-one name="category" class="org.openmrs.Concept"
-                  column="category_id" not-null="true"  />
+                     column="category_id" not-null="true" lazy="false"  cascade="none"  />
 
         <many-to-one name="treatmentLine" class="org.openmrs.Concept"
-                     column="treatment_line_id" not-null="true"  />
+                     column="treatment_line_id" not-null="true" lazy="false" cascade="none" />
 
     </class>
 </hibernate-mapping>

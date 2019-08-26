@@ -127,11 +127,13 @@ public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService im
         EncounterTransaction encounterTransaction = emrEncounterService.save(bahmniEncounterTransaction.toEncounterTransaction());
 
 
-        handleDrugOrderRelationships(bahmniEncounterTransaction, encounterTransaction);
+
 
         //Get the saved encounter transaction from emr-api
         String encounterUuid = encounterTransaction.getEncounterUuid();
         Encounter currentEncounter = encounterService.getEncounterByUuid(encounterUuid);
+
+
 
         boolean includeAll = false;
         EncounterTransaction updatedEncounterTransaction = encounterTransactionMapper.map(currentEncounter, includeAll);
@@ -139,11 +141,14 @@ public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService im
             updatedEncounterTransaction = saveCommand.save(bahmniEncounterTransaction, currentEncounter, updatedEncounterTransaction);
         }
         bahmniVisitAttributeService.save(currentEncounter);
+       // if(bahmniEncounterTransaction.getDrugOrderRelationshipList() != null && bahmniEncounterTransaction.getDrugOrderRelationshipList().size() > 0){
+        handleDrugOrderRelationships(bahmniEncounterTransaction, updatedEncounterTransaction);
+       // }
         return bahmniEncounterTransactionMapper.map(updatedEncounterTransaction, includeAll);
     }
 
     private void handleDrugOrderRelationships(BahmniEncounterTransaction bahmniEncounterTransaction, EncounterTransaction encounterTransaction) {
-        List<DrugOrderRelationshipDTO> relationshipDTOList = bahmniEncounterTransaction.getDrugOrderRelationships();
+        List<DrugOrderRelationshipDTO> relationshipDTOList = bahmniEncounterTransaction.getDrugOrderRelationshipList();
         List<EncounterTransaction.DrugOrder> orders = encounterTransaction.getDrugOrders();
         List<DrugOrderRelationship> drugOrderRelationships = new ArrayList();
 
@@ -155,9 +160,17 @@ public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService im
 
                     DrugOrderRelationshipDTO drugOrderRelationshipDTO = relationshipDTOList.get(j);
 
+
+
                     Concept category = Context.getConceptService().getConceptByUuid(drugOrderRelationshipDTO.getCategoryUuid());
+                    category.setId(category.getId());
+
                     Concept treatmentLine = Context.getConceptService().getConceptByUuid(drugOrderRelationshipDTO.getTreatmentLineUuid());
-                    DrugOrder drugOrder = drugOrderRelationshipDao.getDrugOrderByUuid(orders.get(i).getUuid());
+                    treatmentLine.setId(treatmentLine.getId());
+
+                    Order ord = Context.getOrderService().getOrderByUuid(orders.get(i).getUuid());
+                    DrugOrder drugOrder = drugOrderRelationshipDao.getDrugOrderById(ord.getId());
+
 
                     DrugOrderRelationship drugOrderRelationship = new DrugOrderRelationship();
                     drugOrderRelationship.setCategory(category);
@@ -165,12 +178,11 @@ public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService im
                     drugOrderRelationship.setOrder(drugOrder);
                     drugOrderRelationship.setCreator(Context.getAuthenticatedUser());
                     drugOrderRelationships.add(drugOrderRelationship);
-                    drugOrderRelationshipDao.saveOrUpdate(drugOrderRelationship);
 
                 }
-
             }
         }
+        drugOrderRelationshipDao.saveAll(drugOrderRelationships);
 
 
     }

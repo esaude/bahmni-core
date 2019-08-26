@@ -32,7 +32,7 @@ public class BahmniEncounterTransaction {
     private String patientId;
     private String reason;
     private String locale;
-    private List<DrugOrderRelationshipDTO> drugOrderRelationships;
+    private List<DrugOrderRelationshipDTO> drugOrderRelationshipList;
 
 
     public BahmniEncounterTransaction() {
@@ -338,12 +338,12 @@ public class BahmniEncounterTransaction {
         this.reason = reason;
     }
 
-    public List<DrugOrderRelationshipDTO> getDrugOrderRelationships() {
-        return drugOrderRelationships;
+    public List<DrugOrderRelationshipDTO> getDrugOrderRelationshipList() {
+        return drugOrderRelationshipList;
     }
 
-    public void setDrugOrderRelationships(List<DrugOrderRelationshipDTO> drugOrderRelationships) {
-        this.drugOrderRelationships = drugOrderRelationships;
+    public void setDrugOrderRelationships(List<DrugOrderRelationshipDTO> drugOrderRelationshipList) {
+        this.drugOrderRelationshipList = drugOrderRelationshipList;
     }
 
     public boolean hasPastDrugOrders() {
