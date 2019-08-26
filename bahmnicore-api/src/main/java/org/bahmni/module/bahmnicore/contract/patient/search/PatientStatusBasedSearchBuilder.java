@@ -36,12 +36,7 @@ public class PatientStatusBasedSearchBuilder {
 			"primary_identifier.identifier as identifier, " +
 			"extra_identifiers.identifiers as extraIdentifiers, " +
 			"(CASE va.value_reference WHEN 'Admitted' THEN TRUE ELSE FALSE END) as hasBeenAdmitted ";
-	public static final String WHERE_CLAUSE = " where p.voided = 'false' and pn.voided = 'false' and pn.preferred=true and " + 
-			" not exists (select 1 from person_attribute pa join" + 
-			" person_attribute_type pat on pat.person_attribute_type_id = pa.person_attribute_type_id" + 
-			" where (pat.name = 'PATIENT_STATE' and (pa.value = 'INACTIVE_TRANSFERRED_OUT' or pa.value = 'INACTIVE_SUSPENDED' or pa.value = 'INACTIVE_DEATH')) and" + 
-			" pa.person_id = p.person_id" + 
-			")";
+	public static final String WHERE_CLAUSE = " where p.voided = 'false' and pn.voided = 'false' and pn.preferred=true";
 	public static final String FROM_TABLE = " from person p ";
 	public static final String JOIN_CLAUSE = " left join person_name pn on pn.person_id = p.person_id" +
 			" left join person_address pa on p.person_id=pa.person_id and pa.voided = 'false'" +
@@ -50,6 +45,16 @@ public class PatientStatusBasedSearchBuilder {
 			" JOIN patient_identifier_type pit ON pi.identifier_type = pit.patient_identifier_type_id AND pi.voided IS FALSE AND pit.retired IS FALSE" +
 			" JOIN global_property gp ON gp.property = 'bahmni.primaryIdentifierType' AND gp.property_value = pit.uuid" +
 			"      GROUP BY pi.patient_id) as primary_identifier ON p.person_id = primary_identifier.patient_id" +
+			" JOIN (" +
+			" select statusquery.patient_id as Active_patient_id from (" +
+			" select pss.id,pss.patient_id,pss.patient_state " +
+			" from patient_status_state pss " +
+			" left join patient_status_state pss2 " +
+			" on pss.patient_id=pss2.patient_id and pss.id < pss2.id" +
+			" where pss2.id IS NULL" +
+			" ) statusquery where statusquery.patient_state='ACTIVE' " +
+			") as final_active_patient" +
+			" on p.person_id=final_active_patient.Active_patient_id" +
 			" LEFT JOIN (SELECT concat('{', group_concat((concat('\"', pit.name, '\":\"', pi.identifier, '\"')) SEPARATOR ','), '}') AS identifiers," +
 			"        patient_id" +
 			"      FROM patient_identifier pi" +
