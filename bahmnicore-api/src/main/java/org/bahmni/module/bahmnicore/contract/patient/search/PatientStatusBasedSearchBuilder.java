@@ -52,7 +52,7 @@ public class PatientStatusBasedSearchBuilder {
 			" left join patient_status_state pss2 " +
 			" on pss.patient_id=pss2.patient_id and pss.id < pss2.id" +
 			" where pss2.id IS NULL" +
-			" ) statusquery where statusquery.patient_state='ACTIVE' " +
+			" ) statusquery where statusquery.patient_state<>'INACTIVE_TRANSFERRED_OUT' AND statusquery.patient_state<>'INACTIVE_SUSPENDED' AND statusquery.patient_state<>'INACTIVE_DEATH' " +
 			") as final_active_patient" +
 			" on p.person_id=final_active_patient.Active_patient_id" +
 			" LEFT JOIN (SELECT concat('{', group_concat((concat('\"', pit.name, '\":\"', pi.identifier, '\"')) SEPARATOR ','), '}') AS identifiers," +
