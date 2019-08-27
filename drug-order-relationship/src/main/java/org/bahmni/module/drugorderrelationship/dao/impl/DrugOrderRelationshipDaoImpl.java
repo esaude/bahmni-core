@@ -3,20 +3,21 @@ package org.bahmni.module.drugorderrelationship.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bahmni.module.drugorderrelationship.dao.DrugOrderRelationshipDao;
+import org.bahmni.module.drugorderrelationship.model.ConceptDTO;
+import org.bahmni.module.drugorderrelationship.model.DrugOrderDTO;
 import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationship;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.hibernate.*;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Obs;
+import org.openmrs.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
@@ -50,47 +51,70 @@ public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
     @Transactional
     public void saveAll(List<DrugOrderRelationship> drugRelationshipList) {
         Session session= sessionFactory.getCurrentSession();
-        try {
-        for(int i = 0; i < drugRelationshipList.size(); i++){
-            session.save(drugRelationshipList.get(i));
+
+        for (DrugOrderRelationship d : drugRelationshipList) {
+            session.save(d);
             session.flush();
             session.clear();
         }
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-        log.error("DONE");
-
-
 
 
     }
 
+
+/*    @Override
+    @Transactional
+    public DrugOrderDTO getDrugOrderById (int id) {
+        SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery("select orderId, uuid from DrugOrder where orderId=:id");
+        query.setParameter("id",id);
+        List list = query.list();
+        if(list.size() != 0){
+            Map results = (Map)list.get(0);
+            int identifier =Integer.parseInt(results.get("order_id")+"");
+            String uuid = results.get("uuid")+"";
+            DrugOrderDTO ddto = new DrugOrderDTO();
+            ddto.setOrder_id(identifier);
+            ddto.setOrderId(identifier);
+            ddto.setUuid(uuid);
+
+            return ddto;
+
+        }
+        return null;
+    }*/
 
     @Override
     @Transactional
     public DrugOrder getDrugOrderById (int id) {
-        Query query = sessionFactory.getCurrentSession().createQuery("from DrugOrder where orderId=:id");
-        query.setInteger("id",id);
-        List<DrugOrder> list = query.list();
-        if(list.size() != 0){
-            return list.get(0);
+        Query query = sessionFactory.getCurrentSession().createQuery("select orderId, uuid from DrugOrder where orderId=:id");
+        query.setInteger("id", id);
+        List list = query.list();
+        if (list.size() != 0) {
+          //  return list.get(0);
+            DrugOrder dOrder = new DrugOrder();
+            Object[] results = (Object[]) list.get(0);
+            dOrder.setId(id);
+            dOrder.setUuid(results[1]+"");
+            return dOrder;
         }
-        log.error("****"+list);
         return null;
     }
 
 
     @Override
     @Transactional
-    public DrugOrderRelationship getRelationById(int id) {
-        Query query = sessionFactory.getCurrentSession().createQuery("from ObsRelationship where uuid=:uuid");
-        query.setInteger("id",id);
-        List<DrugOrderRelationship> list = query.list();
+    public Order getOrderByUuid (String uuid) {
+        Query query = sessionFactory.getCurrentSession().createQuery("select orderId, uuid from Order where uuid=:uuid");
+        query.setString("uuid",uuid);
+        List list = query.list();
         if(list.size() != 0){
-            return list.get(0);
+            Order ord = new Order();
+            Object[] results = (Object[])list.get(0);
+            int id =Integer.parseInt(results[0]+"");
+            ord.setId(id);
+            ord.setUuid(results[1]+"");
+            return ord;
         }
-        log.error("#####"+list);
         return null;
     }
 
@@ -98,70 +122,42 @@ public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
 
     @Override
     @Transactional
-    public List<DrugOrderRelationship> getDrugOrdersByCategory( Concept category) {
-        Query query = createGetRelationsQueryForCategory(category);
-        List<DrugOrderRelationship> drugOrderRelationshipList = query.list();
-        return drugOrderRelationshipList;
-    }
-
-    @Override
-    @Transactional
-    public List<DrugOrderRelationship> getDrugOrdersByTreatmentLine( Concept treatmentLine) {
-        Query query = createGetRelationsQueryForCategory(treatmentLine);
-        List<DrugOrderRelationship> drugOrderRelationshipList = query.list();
-        return drugOrderRelationshipList;
-    }
-
-
-    @Override
-    @Transactional
-    public List<DrugOrderRelationship> getRelationshipByOrder( DrugOrder order) {
-        Query query = createGetRelationsQueryForOrder(order);
-        List<DrugOrderRelationship> drugOrderRelationshipList = query.list();
-        return drugOrderRelationshipList;
+    public Concept getConceptByUuid (String uuid) {
+        Query query = sessionFactory.getCurrentSession().createQuery("select conceptId, uuid from Concept where uuid=:uuid");
+        query.setString("uuid",uuid);
+        List list = query.list();
+        if(list.size() != 0){
+            Concept conc = new Concept();
+            Object[] results = (Object[])list.get(0);
+            int identifier =Integer.parseInt(results[0]+"");
+            conc.setId(identifier);
+            conc.setUuid(results[1]+"");
+            return conc;
+        }
+        return null;
     }
 
 
 
-    private Query createGetRelationsQueryForTreatmentLine(Concept treatmentLine) {
-        Query query = null;
-        if(treatmentLine == null){
-            throw new IllegalArgumentException("Category cannot be null");
-        }
-        else{
-            query = sessionFactory.getCurrentSession().createQuery("from DrugOrderRelationship where treatmentLine=:treatmentLine ");
-            query.setInteger("treatmentLine", treatmentLine.getId());
+        /*SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery("select conceptId, uuid from Concept where uuid=:uuid");
+        query.setParameter("uuid",uuid);
+        List list = query.list();
+        if(list.size() != 0){
+            Map results = (Map)list.get(0);
+            int identifier =Integer.parseInt(results.get("concept_id")+"");
+            String Uuid = results.get("uuid")+"";
+            ConceptDTO ddto = new ConceptDTO();
+            ddto.setConcept_id(identifier);
+            ddto.setConceptId(identifier);
+            ddto.setUuid(Uuid);*/
 
-        }
-        return query;
-    }
-
-
-    private Query createGetRelationsQueryForCategory(Concept category) {
-        Query query = null;
-        if(category == null){
-            throw new IllegalArgumentException("Category cannot be null");
-        }
-        else{
-            query = sessionFactory.getCurrentSession().createQuery("from DrugOrderRelationship where category=:category ");
-            query.setInteger("category", category.getId());
-
-        }
-        return query;
-    }
+            //return ddto;
 
 
-    private Query createGetRelationsQueryForOrder(DrugOrder drugOrder) {
-        Query query = null;
-        if(drugOrder == null){
-            throw new IllegalArgumentException("DrugOrder  cannot be null");
-        }
-        else{
-            query = sessionFactory.getCurrentSession().createQuery("from DrugOrderRelationship where drugOrder=:drugOrder ");
-            query.setInteger("drugOrder", drugOrder.getId());
 
-        }
-        return query;
-    }
+
+
+
+
 
 }

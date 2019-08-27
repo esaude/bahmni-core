@@ -4,6 +4,8 @@ package org.openmrs.module.bahmniemrapi.encountertransaction.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.bahmni.module.drugorderrelationship.dao.DrugOrderRelationshipDao;
 import org.bahmni.module.drugorderrelationship.dao.impl.DrugOrderRelationshipDaoImpl;
+import org.bahmni.module.drugorderrelationship.model.ConceptDTO;
+import org.bahmni.module.drugorderrelationship.model.DrugOrderDTO;
 import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationship;
 import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationshipDTO;
 import org.openmrs.*;
@@ -162,14 +164,20 @@ public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService im
 
 
 
-                    Concept category = Context.getConceptService().getConceptByUuid(drugOrderRelationshipDTO.getCategoryUuid());
-                    category.setId(category.getId());
+                    Concept categoryDTO = drugOrderRelationshipDao.getConceptByUuid(drugOrderRelationshipDTO.getCategoryUuid());
+                    Concept category = new Concept();
+                    category.setId(categoryDTO.getConceptId());
 
-                    Concept treatmentLine = Context.getConceptService().getConceptByUuid(drugOrderRelationshipDTO.getTreatmentLineUuid());
-                    treatmentLine.setId(treatmentLine.getId());
+                    Concept treatmentLineDTO =  drugOrderRelationshipDao.getConceptByUuid(drugOrderRelationshipDTO.getTreatmentLineUuid());
+                    Concept treatmentLine = new Concept();
+                    treatmentLine.setId(treatmentLineDTO.getConceptId());
 
-                    Order ord = Context.getOrderService().getOrderByUuid(orders.get(i).getUuid());
-                    DrugOrder drugOrder = drugOrderRelationshipDao.getDrugOrderById(ord.getId());
+                    //Order ord = Context.getOrderService().getOrderByUuid(orders.get(i).getUuid());
+                    Order ord = drugOrderRelationshipDao.getOrderByUuid(orders.get(i).getUuid());
+                    DrugOrder drugOrderDTO = drugOrderRelationshipDao.getDrugOrderById(ord.getId());
+
+                    DrugOrder drugOrder = new DrugOrder();
+                    drugOrder.setId(drugOrderDTO.getOrderId());
 
 
                     DrugOrderRelationship drugOrderRelationship = new DrugOrderRelationship();
