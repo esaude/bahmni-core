@@ -16,6 +16,7 @@ public interface DrugOrderRelationshipDao {
     DrugOrder getDrugOrderById(int id);
     Order getOrderByUuid(String uuid);
     Concept getConceptByUuid (String uuid);
-    public void saveAll(List<DrugOrderRelationship> obsRelationshipList);
+    DrugOrderRelationship getLastInserted ();
+    void saveAll(List<DrugOrderRelationship> obsRelationshipList, int indexOfLastInsert);
 
 }

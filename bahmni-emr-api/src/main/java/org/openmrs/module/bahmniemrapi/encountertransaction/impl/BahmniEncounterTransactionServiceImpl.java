@@ -2,6 +2,8 @@ package org.openmrs.module.bahmniemrapi.encountertransaction.impl;
 
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bahmni.module.drugorderrelationship.dao.DrugOrderRelationshipDao;
 import org.bahmni.module.drugorderrelationship.dao.impl.DrugOrderRelationshipDaoImpl;
 import org.bahmni.module.drugorderrelationship.model.ConceptDTO;
@@ -145,7 +147,7 @@ public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService im
         bahmniVisitAttributeService.save(currentEncounter);
        // if(bahmniEncounterTransaction.getDrugOrderRelationshipList() != null && bahmniEncounterTransaction.getDrugOrderRelationshipList().size() > 0){
         handleDrugOrderRelationships(bahmniEncounterTransaction, updatedEncounterTransaction);
-       // }
+        //}
         return bahmniEncounterTransactionMapper.map(updatedEncounterTransaction, includeAll);
     }
 
@@ -162,23 +164,11 @@ public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService im
 
                     DrugOrderRelationshipDTO drugOrderRelationshipDTO = relationshipDTOList.get(j);
 
+                    Concept category = drugOrderRelationshipDao.getConceptByUuid(drugOrderRelationshipDTO.getCategoryUuid());
 
-
-                    Concept categoryDTO = drugOrderRelationshipDao.getConceptByUuid(drugOrderRelationshipDTO.getCategoryUuid());
-                    Concept category = new Concept();
-                    category.setId(categoryDTO.getConceptId());
-
-                    Concept treatmentLineDTO =  drugOrderRelationshipDao.getConceptByUuid(drugOrderRelationshipDTO.getTreatmentLineUuid());
-                    Concept treatmentLine = new Concept();
-                    treatmentLine.setId(treatmentLineDTO.getConceptId());
-
-                    //Order ord = Context.getOrderService().getOrderByUuid(orders.get(i).getUuid());
+                    Concept treatmentLine =  drugOrderRelationshipDao.getConceptByUuid(drugOrderRelationshipDTO.getTreatmentLineUuid());
                     Order ord = drugOrderRelationshipDao.getOrderByUuid(orders.get(i).getUuid());
-                    DrugOrder drugOrderDTO = drugOrderRelationshipDao.getDrugOrderById(ord.getId());
-
-                    DrugOrder drugOrder = new DrugOrder();
-                    drugOrder.setId(drugOrderDTO.getOrderId());
-
+                    DrugOrder drugOrder = drugOrderRelationshipDao.getDrugOrderById(ord.getId());
 
                     DrugOrderRelationship drugOrderRelationship = new DrugOrderRelationship();
                     drugOrderRelationship.setCategory(category);
@@ -190,7 +180,13 @@ public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService im
                 }
             }
         }
-        drugOrderRelationshipDao.saveAll(drugOrderRelationships);
+
+        int lastOrderRelationshipId = 0;
+        DrugOrderRelationship dOrderRelationship = drugOrderRelationshipDao.getLastInserted();
+        if(dOrderRelationship!= null){
+            lastOrderRelationshipId = dOrderRelationship.getId();
+        }
+        drugOrderRelationshipDao.saveAll(drugOrderRelationships, lastOrderRelationshipId);
 
 
     }

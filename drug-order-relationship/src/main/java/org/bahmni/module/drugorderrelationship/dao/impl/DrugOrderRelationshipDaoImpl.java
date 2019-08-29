@@ -3,21 +3,19 @@ package org.bahmni.module.drugorderrelationship.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bahmni.module.drugorderrelationship.dao.DrugOrderRelationshipDao;
-import org.bahmni.module.drugorderrelationship.model.ConceptDTO;
-import org.bahmni.module.drugorderrelationship.model.DrugOrderDTO;
 import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationship;
 
 import org.hibernate.*;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
-import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
+
 
 @Component
 public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
@@ -49,39 +47,25 @@ public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
 
     @Override
     @Transactional
-    public void saveAll(List<DrugOrderRelationship> drugRelationshipList) {
+    public void saveAll(List<DrugOrderRelationship> drugRelationshipList, int indexOfLastInsert) {
         Session session= sessionFactory.getCurrentSession();
-
+        int counter=1;
+        session.setCacheMode(CacheMode.IGNORE);
         for (DrugOrderRelationship d : drugRelationshipList) {
+            d.setDateCreated(new Date());
+            d.setId((indexOfLastInsert+counter));
+           /* DrugOrderRelationship drugOrderRelationship = new DrugOrderRelationship();
+            drugOrderRelationship.setId((indexOfLastInsert+counter));
+            drugOrderRelationship.setOrder(d.getOrder());
+            drugOrderRelationship.setCreator(d.getCreator());
+            drugOrderRelationship.setTreatmentLine(d.getTreatmentLine());
+            drugOrderRelationship.setDateCreated(new Date());*/
+            session.evict(d);
             session.save(d);
-            session.flush();
-            session.clear();
+            counter++;
         }
-
-
     }
 
-
-/*    @Override
-    @Transactional
-    public DrugOrderDTO getDrugOrderById (int id) {
-        SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery("select orderId, uuid from DrugOrder where orderId=:id");
-        query.setParameter("id",id);
-        List list = query.list();
-        if(list.size() != 0){
-            Map results = (Map)list.get(0);
-            int identifier =Integer.parseInt(results.get("order_id")+"");
-            String uuid = results.get("uuid")+"";
-            DrugOrderDTO ddto = new DrugOrderDTO();
-            ddto.setOrder_id(identifier);
-            ddto.setOrderId(identifier);
-            ddto.setUuid(uuid);
-
-            return ddto;
-
-        }
-        return null;
-    }*/
 
     @Override
     @Transactional
@@ -90,7 +74,6 @@ public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
         query.setInteger("id", id);
         List list = query.list();
         if (list.size() != 0) {
-          //  return list.get(0);
             DrugOrder dOrder = new DrugOrder();
             Object[] results = (Object[]) list.get(0);
             dOrder.setId(id);
@@ -119,7 +102,6 @@ public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
     }
 
 
-
     @Override
     @Transactional
     public Concept getConceptByUuid (String uuid) {
@@ -138,25 +120,17 @@ public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
     }
 
 
-
-        /*SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery("select conceptId, uuid from Concept where uuid=:uuid");
-        query.setParameter("uuid",uuid);
-        List list = query.list();
+    @Override
+    @Transactional
+    public DrugOrderRelationship getLastInserted () {
+        Query query = sessionFactory.getCurrentSession().createQuery("from DrugOrderRelationship order by id DESC");
+        query.setMaxResults(1);
+        List<DrugOrderRelationship> list = query.list();
         if(list.size() != 0){
-            Map results = (Map)list.get(0);
-            int identifier =Integer.parseInt(results.get("concept_id")+"");
-            String Uuid = results.get("uuid")+"";
-            ConceptDTO ddto = new ConceptDTO();
-            ddto.setConcept_id(identifier);
-            ddto.setConceptId(identifier);
-            ddto.setUuid(Uuid);*/
-
-            //return ddto;
-
-
-
-
-
+            return list.get(0);
+        }
+        return null;
+    }
 
 
 

@@ -5,7 +5,7 @@ import org.openmrs.*;
 import java.io.Serializable;
 import java.util.Date;
 
-public class DrugOrderRelationship  extends BaseOpenmrsObject implements Auditable, Serializable {
+public class DrugOrderRelationship   {
 
     private int id;
     private DrugOrder order;
@@ -14,55 +14,8 @@ public class DrugOrderRelationship  extends BaseOpenmrsObject implements Auditab
     private User creator;
     private Date dateCreated;
 
-    @Override
-    public User getCreator() {
-        return this.creator;
-    }
-
-
-    @Override
-    public void setCreator(User creator) {
-        this.creator = creator;
-    }
-
-    @Override
-    public Date getDateCreated() {
-        return this.dateCreated;
-    }
-
-    @Override
-    public void setDateCreated(Date dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    @Override
-    public User getChangedBy() {
-        return null;
-    }
-
-    @Override
-    public void setChangedBy(User changedBy) {
-
-    }
-
-    @Override
-    public Date getDateChanged() {
-        return null;
-    }
-
-    @Override
-    public void setDateChanged(Date dateChanged) {
-
-    }
-
-    @Override
-    public Integer getId() {
-        return this.id;
-    }
-
-    @Override
-    public void setId(Integer id) {
-        this.id = id;
+    public int getId() {
+        return id;
     }
 
     public void setId(int id) {
@@ -91,5 +44,21 @@ public class DrugOrderRelationship  extends BaseOpenmrsObject implements Auditab
 
     public void setTreatmentLine(Concept treatmentLine) {
         this.treatmentLine = treatmentLine;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
+
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
     }
 }
