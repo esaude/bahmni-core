@@ -1,8 +1,6 @@
 package org.bahmni.module.bahmnicore.contract.patient.search;
 
 import org.bahmni.module.bahmnicore.contract.patient.response.PatientResponse;
-import org.bahmni.module.bahmnicore.customdatatype.datatype.CodedConceptDatatype;
-import org.bahmni.module.bahmnicore.model.bahmniPatientProgram.ProgramAttributeType;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.transform.Transformers;
@@ -12,7 +10,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 public class PatientStatusBasedSearchBuilder {

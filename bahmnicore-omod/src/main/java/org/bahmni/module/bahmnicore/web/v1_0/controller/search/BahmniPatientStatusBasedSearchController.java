@@ -1,7 +1,6 @@
 package org.bahmni.module.bahmnicore.web.v1_0.controller.search;
 
 import org.bahmni.module.bahmnicore.contract.patient.PatientStatusBasedSearchParameters;
-import org.bahmni.module.bahmnicore.contract.patient.PatientSearchParameters;
 import org.bahmni.module.bahmnicore.contract.patient.response.PatientResponse;
 import org.bahmni.module.bahmnicore.service.BahmniPatientService;
 import org.openmrs.module.webservices.rest.web.RequestContext;
@@ -9,7 +8,6 @@ import org.openmrs.module.webservices.rest.web.RestConstants;
 import org.openmrs.module.webservices.rest.web.RestUtil;
 import org.openmrs.module.webservices.rest.web.resource.impl.AlreadyPaged;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
-import org.openmrs.module.webservices.rest.web.v1_0.controller.BaseRestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

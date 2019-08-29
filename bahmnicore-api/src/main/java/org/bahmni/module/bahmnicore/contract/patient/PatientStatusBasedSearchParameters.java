@@ -1,11 +1,8 @@
 package org.bahmni.module.bahmnicore.contract.patient;
 
-import org.apache.commons.lang.StringUtils;
 import org.openmrs.module.webservices.rest.web.RequestContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.Date;
 import java.util.Map;
 
 public class PatientStatusBasedSearchParameters {
@@ -15,13 +12,11 @@ public class PatientStatusBasedSearchParameters {
     private Integer length;
     
 
-	private Log log = LogFactory.getLog(this.getClass());
 
 
     public PatientStatusBasedSearchParameters(RequestContext context) {
     	
         String query = context.getParameter("q");
-        Map parameterMap = context.getRequest().getParameterMap();
         String identifier = context.getParameter("identifier");
         if (identifier != null) {
             this.setIdentifier(identifier);
