@@ -1,9 +1,6 @@
 package org.bahmni.module.bahmnicore.contract.patient;
 
 import org.openmrs.module.webservices.rest.web.RequestContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import java.util.Map;
 
 public class PatientStatusBasedSearchParameters {
     private String identifier;
