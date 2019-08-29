@@ -5,6 +5,7 @@ import org.bahmni.module.drugorderrelationship.model.DrugOrderDTO;
 import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationship;
 
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 
@@ -16,6 +17,7 @@ public interface DrugOrderRelationshipDao {
     DrugOrder getDrugOrderById(int id);
     Order getOrderByUuid(String uuid);
     Concept getConceptByUuid (String uuid);
+    DrugOrderRelationship getByOrderId (int orderId);
     DrugOrderRelationship getLastInserted ();
     void saveAll(List<DrugOrderRelationship> obsRelationshipList, int indexOfLastInsert);
 

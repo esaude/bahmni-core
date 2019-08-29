@@ -5,9 +5,13 @@ import org.apache.log4j.Logger;
 import org.bahmni.module.bahmnicore.service.BahmniDrugOrderService;
 import org.bahmni.module.bahmnicore.service.BahmniObsService;
 import org.bahmni.module.bahmnicore.util.BahmniDateUtil;
+import org.bahmni.module.drugorderrelationship.model.*;
+import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationship;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.DrugOrder;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.bahmniemrapi.drugorder.contract.BahmniDrugOrder;
 import org.openmrs.module.bahmniemrapi.drugorder.contract.BahmniOrderAttribute;
 import org.openmrs.module.bahmniemrapi.drugorder.mapper.BahmniDrugOrderMapper;
@@ -21,19 +25,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.swing.text.AbstractDocument;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 public class BahmniDrugOrderController extends BaseRestController {
@@ -71,6 +66,34 @@ public class BahmniDrugOrderController extends BaseRestController {
         Date startDate = BahmniDateUtil.convertToDate(startDateStr, BahmniDateUtil.DateFormatType.UTC);
         Date endDate = BahmniDateUtil.convertToDate(endDateStr, BahmniDateUtil.DateFormatType.UTC);
         return getActiveOrders(patientUuid, startDate, endDate);
+    }
+
+
+    @RequestMapping(value = baseUrl + "/drugOrderRelationship", method = RequestMethod.GET)
+    @ResponseBody
+    public  DrugOrderRelationshipResponse getDrugOrderRelationship(@RequestParam(value = "orderUuid") String orderUuid) {
+        DrugOrderRelationship dor=drugOrderService.getDrugOrderRelationship(orderUuid);
+        Locale pt = new Locale("pt");
+        CategoryDTO category = new CategoryDTO();
+        category.setConceptNameType("FULLY_SPECIFIED");
+        category.setDisplay(dor.getCategory().getFullySpecifiedName(Locale.ENGLISH).getName());
+        category.setNameEN(dor.getCategory().getFullySpecifiedName(Locale.ENGLISH).getName());
+        //category.setNamePT(dor.getCategory().getFullySpecifiedName(pt).getName());
+        category.setUuid(dor.getCategory().getUuid());
+
+
+        TreatmentLineDTO treatmentLine = new TreatmentLineDTO();
+        treatmentLine.setConceptNameType("FULLY_SPECIFIED");
+        treatmentLine.setDisplay(dor.getTreatmentLine().getFullySpecifiedName(Locale.ENGLISH).getName());
+        treatmentLine.setNameEN(dor.getTreatmentLine().getFullySpecifiedName(Locale.ENGLISH).getName());
+        //treatmentLine.setNamePT(dor.getTreatmentLine().getFullySpecifiedName(pt).getName());
+        treatmentLine.setUuid(dor.getTreatmentLine().getUuid());
+
+        DrugOrderRelationshipResponse drugOrderRelationshipResponse = new DrugOrderRelationshipResponse();
+        drugOrderRelationshipResponse.setCategory(category);
+        drugOrderRelationshipResponse.setTreatmentLine(treatmentLine);
+
+        return drugOrderRelationshipResponse;
     }
 
     @RequestMapping(value = baseUrl + "/prescribedAndActive", method = RequestMethod.GET)

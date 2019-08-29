@@ -7,6 +7,7 @@ import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationship;
 
 import org.hibernate.*;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,12 +55,6 @@ public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
         for (DrugOrderRelationship d : drugRelationshipList) {
             d.setDateCreated(new Date());
             d.setId((indexOfLastInsert+counter));
-           /* DrugOrderRelationship drugOrderRelationship = new DrugOrderRelationship();
-            drugOrderRelationship.setId((indexOfLastInsert+counter));
-            drugOrderRelationship.setOrder(d.getOrder());
-            drugOrderRelationship.setCreator(d.getCreator());
-            drugOrderRelationship.setTreatmentLine(d.getTreatmentLine());
-            drugOrderRelationship.setDateCreated(new Date());*/
             session.evict(d);
             session.save(d);
             counter++;
@@ -132,6 +127,19 @@ public class DrugOrderRelationshipDaoImpl implements DrugOrderRelationshipDao {
         return null;
     }
 
+    @Override
+    @Transactional
+    public DrugOrderRelationship getByOrderId (int orderId) {
+        SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery("select * from drug_order_relationship where drug_order_id=:orderId");
+        query.addEntity(DrugOrderRelationship.class);
+        query.setParameter("orderId", orderId);
+        List<DrugOrderRelationship> list = query.list();
+        if(list.size() != 0){
+            log.error("CONCEPT ID"+list.get(0).getTreatmentLine().getConceptId());
+            return list.get(0);
+        }
 
+        return null;
+    }
 
 }
