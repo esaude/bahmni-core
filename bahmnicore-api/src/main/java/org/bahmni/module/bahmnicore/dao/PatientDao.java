@@ -14,6 +14,8 @@ public interface PatientDao {
                                              String[] addressSearchResultFields, String[] patientSearchResultFields, String loginLocationUuid, Boolean filterPatientsByLocation, Boolean filterOnAllIdentifiers);
 
     public List<PatientResponse> getDuplicatePatients(String name,Integer length, Integer offset, String gender, String birthDate, String customAttribute, String[] patientAttributes,String[] patientSearchResultFields);
+    
+    public List<PatientResponse> getStatusBasedPatients(String name,Integer length, Integer offset, String identifier);
 
     List<PatientResponse> getPatientsUsingLuceneSearch(String identifier, String name, String customAttribute,
                                                        String addressFieldName, String addressFieldValue, Integer length,
