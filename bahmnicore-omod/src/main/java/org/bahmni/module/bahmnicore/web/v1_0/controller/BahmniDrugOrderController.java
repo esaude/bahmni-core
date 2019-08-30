@@ -76,17 +76,27 @@ public class BahmniDrugOrderController extends BaseRestController {
         Locale pt = new Locale("pt");
         CategoryDTO category = new CategoryDTO();
         category.setConceptNameType("FULLY_SPECIFIED");
-        category.setDisplay(dor.getCategory().getFullySpecifiedName(Locale.ENGLISH).getName());
-        category.setNameEN(dor.getCategory().getFullySpecifiedName(Locale.ENGLISH).getName());
-        //category.setNamePT(dor.getCategory().getFullySpecifiedName(pt).getName());
+        String catDisplay = dor.getCategory().getFullySpecifiedName(Locale.ENGLISH).getName() ;
+        if(catDisplay != null){
+            category.setDisplay(catDisplay);
+            category.setNameEN(dor.getCategory().getFullySpecifiedName(Locale.ENGLISH).getName());
+        }
+
+        if(dor.getCategory().getFullySpecifiedName(pt).getName() != null){
+            category.setNamePT(dor.getCategory().getFullySpecifiedName(pt).getName());
+        }
         category.setUuid(dor.getCategory().getUuid());
 
 
         TreatmentLineDTO treatmentLine = new TreatmentLineDTO();
         treatmentLine.setConceptNameType("FULLY_SPECIFIED");
-        treatmentLine.setDisplay(dor.getTreatmentLine().getFullySpecifiedName(Locale.ENGLISH).getName());
-        treatmentLine.setNameEN(dor.getTreatmentLine().getFullySpecifiedName(Locale.ENGLISH).getName());
-        //treatmentLine.setNamePT(dor.getTreatmentLine().getFullySpecifiedName(pt).getName());
+
+        String display = dor.getTreatmentLine().getFullySpecifiedName(Locale.ENGLISH).getName() ;
+        if(display != null){
+            treatmentLine.setDisplay(display);
+            treatmentLine.setNameEN(dor.getTreatmentLine().getFullySpecifiedName(Locale.ENGLISH).getName());
+        }
+
         treatmentLine.setUuid(dor.getTreatmentLine().getUuid());
 
         DrugOrderRelationshipResponse drugOrderRelationshipResponse = new DrugOrderRelationshipResponse();
