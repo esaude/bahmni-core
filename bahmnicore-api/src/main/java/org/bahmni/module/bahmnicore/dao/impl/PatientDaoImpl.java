@@ -7,6 +7,7 @@ import org.bahmni.module.bahmnicore.contract.patient.mapper.PatientResponseMappe
 import org.bahmni.module.bahmnicore.contract.patient.response.PatientResponse;
 import org.bahmni.module.bahmnicore.contract.patient.search.PatientDuplicateSearchBuilder;
 import org.bahmni.module.bahmnicore.contract.patient.search.PatientSearchBuilder;
+import org.bahmni.module.bahmnicore.contract.patient.search.PatientStatusBasedSearchBuilder;
 import org.bahmni.module.bahmnicore.dao.PatientDao;
 import org.bahmni.module.bahmnicore.model.bahmniPatientProgram.ProgramAttributeType;
 import org.bahmni.module.bahmnicore.service.BahmniProgramWorkflowService;
@@ -255,5 +256,15 @@ public class PatientDaoImpl implements PatientDao {
             .buildSqlQuery(length, offset);
             return sqlQuery.list();
 }
+
+	@Override
+	public List<PatientResponse> getStatusBasedPatients(String name, Integer length, Integer offset,
+			String identifier) {
+		SQLQuery sqlQuery = new PatientStatusBasedSearchBuilder(sessionFactory)
+		.withPatientName(name)
+		.withPatientIdentifier(identifier, false)
+		.buildSqlQuery(length, offset);
+		return sqlQuery.list();
+	}
     
 }
