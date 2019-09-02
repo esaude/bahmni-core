@@ -1,18 +1,10 @@
 package org.bahmni.module.drugorderrelationship.model;
 
-import org.openmrs.*;
-
-import java.io.Serializable;
-import java.util.Date;
-
 public class DrugOrderRelationshipDTO  {
 
     private String drugUuid;
     private String categoryUuid;
     private String treatmentLineUuid;
-
-    public DrugOrderRelationshipDTO() {
-    }
 
 
     public String getDrugUuid() {

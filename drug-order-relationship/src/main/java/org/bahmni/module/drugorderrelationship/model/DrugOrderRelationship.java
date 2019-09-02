@@ -1,8 +1,9 @@
 package org.bahmni.module.drugorderrelationship.model;
 
-import org.openmrs.*;
+import org.openmrs.DrugOrder;
+import org.openmrs.Concept;
+import org.openmrs.User;
 
-import java.io.Serializable;
 import java.util.Date;
 
 public class DrugOrderRelationship   {

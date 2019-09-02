@@ -1,11 +1,8 @@
 package org.bahmni.module.drugorderrelationship.dao;
 
-import org.bahmni.module.drugorderrelationship.model.ConceptDTO;
-import org.bahmni.module.drugorderrelationship.model.DrugOrderDTO;
 import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationship;
 
 import org.openmrs.Concept;
-import org.openmrs.ConceptName;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 

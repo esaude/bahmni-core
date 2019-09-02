@@ -2,12 +2,7 @@ package org.openmrs.module.bahmniemrapi.encountertransaction.impl;
 
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bahmni.module.drugorderrelationship.dao.DrugOrderRelationshipDao;
-import org.bahmni.module.drugorderrelationship.dao.impl.DrugOrderRelationshipDaoImpl;
-import org.bahmni.module.drugorderrelationship.model.ConceptDTO;
-import org.bahmni.module.drugorderrelationship.model.DrugOrderDTO;
 import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationship;
 import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationshipDTO;
 import org.openmrs.*;
@@ -17,7 +12,6 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.bahmniemrapi.BahmniEmrAPIException;
 import org.openmrs.module.bahmniemrapi.encountertransaction.command.EncounterDataPostSaveCommand;
@@ -145,9 +139,9 @@ public class BahmniEncounterTransactionServiceImpl extends BaseOpenmrsService im
             updatedEncounterTransaction = saveCommand.save(bahmniEncounterTransaction, currentEncounter, updatedEncounterTransaction);
         }
         bahmniVisitAttributeService.save(currentEncounter);
-       // if(bahmniEncounterTransaction.getDrugOrderRelationshipList() != null && bahmniEncounterTransaction.getDrugOrderRelationshipList().size() > 0){
+        if(bahmniEncounterTransaction.getDrugOrderRelationshipList() != null && bahmniEncounterTransaction.getDrugOrderRelationshipList().size() > 0){
         handleDrugOrderRelationships(bahmniEncounterTransaction, updatedEncounterTransaction);
-        //}
+        }
         return bahmniEncounterTransactionMapper.map(updatedEncounterTransaction, includeAll);
     }
 
