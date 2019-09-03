@@ -71,17 +71,15 @@ public class BahmniDrugOrderController extends BaseRestController {
     @ResponseBody
     public  DrugOrderRelationshipResponse getDrugOrderRelationship(@RequestParam(value = "orderUuid") String orderUuid) {
         DrugOrderRelationship dor=drugOrderService.getDrugOrderRelationship(orderUuid);
-        Locale pt = new Locale("pt");
+
+
         CategoryDTO category = new CategoryDTO();
         category.setConceptNameType("FULLY_SPECIFIED");
-        String catDisplay = dor.getCategory().getFullySpecifiedName(Locale.ENGLISH).getName() ;
-        if(catDisplay != null){
-            category.setDisplay(catDisplay);
-            category.setNameEN(dor.getCategory().getFullySpecifiedName(Locale.ENGLISH).getName());
-        }
 
-        if(dor.getCategory().getFullySpecifiedName(pt).getName() != null){
-            category.setNamePT(dor.getCategory().getFullySpecifiedName(pt).getName());
+        if(dor.getCategory().getFullySpecifiedName(Locale.ENGLISH).getName() != null){
+            String catDisplay = dor.getCategory().getFullySpecifiedName(Locale.ENGLISH).getName();
+            category.setDisplay(catDisplay);
+            category.setNameEN(catDisplay);
         }
         category.setUuid(dor.getCategory().getUuid());
 
@@ -89,10 +87,10 @@ public class BahmniDrugOrderController extends BaseRestController {
         TreatmentLineDTO treatmentLine = new TreatmentLineDTO();
         treatmentLine.setConceptNameType("FULLY_SPECIFIED");
 
-        String display = dor.getTreatmentLine().getFullySpecifiedName(Locale.ENGLISH).getName() ;
-        if(display != null){
+        if(dor.getTreatmentLine().getFullySpecifiedName(Locale.ENGLISH).getName() != null){
+            String display = dor.getTreatmentLine().getFullySpecifiedName(Locale.ENGLISH).getName();
             treatmentLine.setDisplay(display);
-            treatmentLine.setNameEN(dor.getTreatmentLine().getFullySpecifiedName(Locale.ENGLISH).getName());
+            treatmentLine.setNameEN(display);
         }
 
         treatmentLine.setUuid(dor.getTreatmentLine().getUuid());
