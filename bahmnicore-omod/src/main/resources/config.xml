@@ -120,6 +120,7 @@
         <url-pattern>/ws/rest/v1/concept</url-pattern>
     </filter-mapping>
     <mappingFiles>
+        DrugOrderRelationship.hbm.xml
         ObsRelationship.hbm.xml
         ObsRelationshipType.hbm.xml
         LocationEncounterTypeMap.hbm.xml

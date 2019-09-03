@@ -8,6 +8,8 @@ import org.bahmni.module.bahmnicore.contract.drugorder.OrderFrequencyData;
 import org.bahmni.module.bahmnicore.dao.OrderDao;
 import org.bahmni.module.bahmnicore.service.BahmniDrugOrderService;
 import org.bahmni.module.bahmnicore.service.BahmniProgramWorkflowService;
+import org.bahmni.module.drugorderrelationship.dao.DrugOrderRelationshipDao;
+import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationship;
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
@@ -47,6 +49,7 @@ public class BahmniDrugOrderServiceImpl implements BahmniDrugOrderService {
     private OrderService orderService;
     private PatientService openmrsPatientService;
     private OrderDao orderDao;
+    private DrugOrderRelationshipDao drugOrderRelationshipDao;
     private ConceptMapper conceptMapper = new ConceptMapper();
     private BahmniProgramWorkflowService bahmniProgramWorkflowService;
     private BahmniDrugOrderMapper bahmniDrugOrderMapper;
@@ -58,13 +61,14 @@ public class BahmniDrugOrderServiceImpl implements BahmniDrugOrderService {
 
     @Autowired
     public BahmniDrugOrderServiceImpl(ConceptService conceptService, OrderService orderService,
-                                      PatientService patientService, OrderDao orderDao, BahmniProgramWorkflowService bahmniProgramWorkflowService) {
+                                      PatientService patientService, OrderDao orderDao, BahmniProgramWorkflowService bahmniProgramWorkflowService,  DrugOrderRelationshipDao drugOrderRelationshipDao) {
         this.conceptService = conceptService;
         this.orderService = orderService;
         this.openmrsPatientService = patientService;
         this.orderDao = orderDao;
         this.bahmniProgramWorkflowService = bahmniProgramWorkflowService;
         this.bahmniDrugOrderMapper = new BahmniDrugOrderMapper();
+        this.drugOrderRelationshipDao = drugOrderRelationshipDao;
     }
 
 
@@ -90,6 +94,12 @@ public class BahmniDrugOrderServiceImpl implements BahmniDrugOrderService {
 
     public Map<String,DrugOrder> getDiscontinuedDrugOrders(List<DrugOrder> drugOrders){
         return orderDao.getDiscontinuedDrugOrders(drugOrders);
+    }
+
+    public DrugOrderRelationship getDrugOrderRelationship(String orderUuid) {
+    Order order = drugOrderRelationshipDao.getOrderByUuid(orderUuid);
+    DrugOrderRelationship drugOrderRelationship = drugOrderRelationshipDao.getByOrderId(order.getId());
+    return drugOrderRelationship;
     }
 
     @Override

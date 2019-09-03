@@ -4397,6 +4397,28 @@
         <comment>Override SQL query for Get Patient Details in Ward</comment>
         <sqlFile path="BahmniBMPatientListInWard.sql"/>
     </changeSet>
+
+    <changeSet id="bahmni-core-201908191740" author="Rubene,Edgêncio da Calista">
+        <comment>
+            Introducing DrugOrder relationship tables to handle category and line of treatment fields
+        </comment>
+        <sql>
+            CREATE TABLE drug_order_relationship(
+            drug_order_relationship_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+            drug_order_id INT NOT NULL,
+            category_id INT NOT NULL,
+            treatment_line_id INT NOT NULL,
+            date_created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            creator INT NOT NULL,
+            FOREIGN KEY (drug_order_id) REFERENCES drug_order (order_id),
+            FOREIGN KEY (category_id) REFERENCES concept (concept_id),
+            FOREIGN KEY (treatment_line_id) REFERENCES concept (concept_id),
+            FOREIGN KEY (creator) REFERENCES person (person_id)
+            );
+        </sql>
+    </changeSet>
+
+
      <changeSet id="2019083015065565111" author="Krishnan">
         <comment>Add Portuguese locale for Bahmni Diagnosis Status, Bahmni Initial Diagnosis, Bahmni Diagnosis Revised</comment>
         <sql>
