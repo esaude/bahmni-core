@@ -1,6 +1,7 @@
 package org.bahmni.module.bahmnicore.service;
 
 import org.bahmni.module.bahmnicore.contract.drugorder.DrugOrderConfigResponse;
+import org.bahmni.module.drugorderrelationship.model.DrugOrderRelationship;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -18,6 +19,8 @@ import java.util.Set;
 
 public interface BahmniDrugOrderService {
     List<DrugOrder> getActiveDrugOrders(String patientUuid, Date startDate, Date endDate);
+
+    DrugOrderRelationship getDrugOrderRelationship(String orderUuid);
 
     List<DrugOrder> getActiveDrugOrders(String patientUuid);
 
