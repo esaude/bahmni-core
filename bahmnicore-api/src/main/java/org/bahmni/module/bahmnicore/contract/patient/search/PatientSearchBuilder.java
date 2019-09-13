@@ -13,12 +13,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public class PatientSearchBuilder {
 
-	private Log log = LogFactory.getLog(this.getClass());
 
 	private String visitJoin = " left outer join visit v on v.patient_id = p.person_id and v.date_stopped is null ";
 	private static String VISIT_JOIN = "_VISIT_JOIN_";
@@ -157,7 +154,6 @@ public class PatientSearchBuilder {
 	public SQLQuery buildSqlQuery(Integer limit, Integer offset){
 		String joinWithVisit = join.replace(VISIT_JOIN, visitJoin);
 		String query = select + from + joinWithVisit + where + GROUP_BY_KEYWORD + groupBy  + orderBy;
-		log.error(query);
 		SQLQuery sqlQuery = sessionFactory.getCurrentSession()
 				.createSQLQuery(query)
 				.addScalar("uuid", StandardBasicTypes.STRING)
