@@ -13,8 +13,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class PatientSearchBuilder {
+
+	private Log log = LogFactory.getLog(this.getClass());
 
 	private String visitJoin = " left outer join visit v on v.patient_id = p.person_id and v.date_stopped is null ";
 	private static String VISIT_JOIN = "_VISIT_JOIN_";
@@ -27,6 +31,8 @@ public class PatientSearchBuilder {
 			"p.gender as gender, " +
 			"p.birthdate as birthDate, " +
 			"p.death_date as deathDate, " +
+			"final_active_patient.patient_status as patientStatus," +
+          	"final_active_patient.patient_state as patientState," +
 			"p.birthdate_estimated as birthdateEstimated, " +
 			"p.date_created as dateCreated, " +
 			"v.uuid as activeVisitUuid, " +
@@ -37,6 +43,16 @@ public class PatientSearchBuilder {
 	public static final String FROM_TABLE = " from person p ";
 	public static final String JOIN_CLAUSE = " left join person_name pn on pn.person_id = p.person_id" +
 			" left join person_address pa on p.person_id=pa.person_id and pa.voided = 'false'" +
+			" join (" +
+	          " select myquery.patient_id,myquery.patient_status,myquery.patient_state from (" +
+	          " select pss.id,pss.patient_id,pss.patient_status, pss.patient_state" +
+	          " from patient_status_state pss" +
+	          " left join patient_status_state pss2" +
+	          " on pss.patient_id=pss2.patient_id and pss.id < pss2.id"+
+	          " where pss2.id IS NULL"+
+	          " ) myquery" +
+	          " ) as final_active_patient" +
+            " on p.person_id=final_active_patient.patient_id" +
 			" JOIN (SELECT identifier, patient_id" +
 			"      FROM patient_identifier pi" +
 			" JOIN patient_identifier_type pit ON pi.identifier_type = pit.patient_identifier_type_id AND pi.voided IS FALSE AND pit.retired IS FALSE" +
@@ -141,6 +157,7 @@ public class PatientSearchBuilder {
 	public SQLQuery buildSqlQuery(Integer limit, Integer offset){
 		String joinWithVisit = join.replace(VISIT_JOIN, visitJoin);
 		String query = select + from + joinWithVisit + where + GROUP_BY_KEYWORD + groupBy  + orderBy;
+		log.error(query);
 		SQLQuery sqlQuery = sessionFactory.getCurrentSession()
 				.createSQLQuery(query)
 				.addScalar("uuid", StandardBasicTypes.STRING)
@@ -150,6 +167,8 @@ public class PatientSearchBuilder {
 				.addScalar("middleName", StandardBasicTypes.STRING)
 				.addScalar("familyName", StandardBasicTypes.STRING)
 				.addScalar("gender", StandardBasicTypes.STRING)
+				.addScalar("patientStatus", StandardBasicTypes.STRING)
+				.addScalar("patientState", StandardBasicTypes.STRING)
 				.addScalar("birthDate", StandardBasicTypes.DATE)
 				.addScalar("birthdateEstimated", StandardBasicTypes.BOOLEAN)
 				.addScalar("deathDate", StandardBasicTypes.DATE)
