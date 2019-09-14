@@ -4432,4 +4432,27 @@
             values(51,'Bahmni Diagnosis Revised','pt',1,0,'2019-08-19 07:21:44','FULLY_SPECIFIED',0,NULL,NULL,NULL,'71e6a2d4-28c1-4c53-9ec7-5ec650b06f9f',NULL,NULL);
         </sql>
     </changeSet>
+
+    <changeSet id="201909101568124899" author="ekirapa">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="drug_order_relationship_ibfk_4"/>
+        </preConditions>
+        <comment> Drop fk constraint on drug_order_relationship table </comment>
+        <dropForeignKeyConstraint baseTableName="drug_order_relationship" constraintName="drug_order_relationship_ibfk_4"/>
+    </changeSet>
+
+    <changeSet  id="201909101568125182" author="ekirapa">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_drug_relationship_creator"/>
+            </not>
+        </preConditions>
+        <comment> Add users fk constraint in drug_order_relationship </comment>
+        <addForeignKeyConstraint baseColumnNames="creator"
+                                 baseTableName="drug_order_relationship"
+                                 constraintName="fk_drug_relationship_creator"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
 </databaseChangeLog>
