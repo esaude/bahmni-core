@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class PatientStatusBasedSearchBuilder {
-	
+
 	private Log log = LogFactory.getLog(this.getClass());
 
 	private String visitJoin = " left outer join visit v on v.patient_id = p.person_id and v.date_stopped is null ";
@@ -36,32 +36,32 @@ public class PatientStatusBasedSearchBuilder {
 	public static final String WHERE_CLAUSE = " where p.voided = 'false' and pn.voided = 'false' and pn.preferred=true";
 	public static final String FROM_TABLE = " from person p ";
 	public static final String JOIN_CLAUSE = " left join person_name pn on pn.person_id = p.person_id" +
-			" left join person_address pa on p.person_id=pa.person_id and pa.voided = 'false'" +
-			" JOIN (SELECT identifier, patient_id" +
-			"      FROM patient_identifier pi" +
-			" JOIN patient_identifier_type pit ON pi.identifier_type = pit.patient_identifier_type_id AND pi.voided IS FALSE AND pit.retired IS FALSE" +
-			" JOIN global_property gp ON gp.property = 'bahmni.primaryIdentifierType' AND gp.property_value = pit.uuid" +
-			"      GROUP BY pi.patient_id) as primary_identifier ON p.person_id = primary_identifier.patient_id" +
-			" JOIN (" +
-			" select statusquery.patient_id as Active_patient_id from (" +
-			" select pss.id,pss.patient_id,pss.patient_state " +
-			" from patient_status_state pss " +
-			" left join patient_status_state pss2 " +
-			" on pss.patient_id=pss2.patient_id and pss.id < pss2.id" +
-			" where pss2.id IS NULL" +
-			" ) statusquery where statusquery.patient_state<>'INACTIVE_TRANSFERRED_OUT' AND statusquery.patient_state<>'INACTIVE_SUSPENDED' AND statusquery.patient_state<>'INACTIVE_DEATH' " +
-			") as final_active_patient" +
-			" on p.person_id=final_active_patient.Active_patient_id" +
-			" LEFT JOIN (SELECT concat('{', group_concat((concat('\"', pit.name, '\":\"', pi.identifier, '\"')) SEPARATOR ','), '}') AS identifiers," +
-			"        patient_id" +
-			"      FROM patient_identifier pi" +
-			"        JOIN patient_identifier_type pit ON pi.identifier_type = pit.patient_identifier_type_id AND pi.voided IS FALSE AND pit.retired IS FALSE "+
-			" JOIN global_property gp ON gp.property = 'bahmni.primaryIdentifierType' AND gp.property_value != pit.uuid" +
-			"  GROUP BY pi.patient_id) as extra_identifiers ON p.person_id = extra_identifiers.patient_id" +
-			VISIT_JOIN +
-			" left outer join visit_attribute va on va.visit_id = v.visit_id " +
-			"   and va.attribute_type_id = (select visit_attribute_type_id from visit_attribute_type where name='Admission Status') " +
-			"   and va.voided = 0";
+            " left join person_address pa on p.person_id=pa.person_id and pa.voided = 'false'" +
+            " JOIN (SELECT identifier, patient_id" +
+            "      FROM patient_identifier pi" +
+            " JOIN patient_identifier_type pit ON pi.identifier_type = pit.patient_identifier_type_id AND pi.voided IS FALSE AND pit.retired IS FALSE" +
+            " JOIN global_property gp ON gp.property = 'bahmni.primaryIdentifierType' AND gp.property_value = pit.uuid" +
+            "      GROUP BY pi.patient_id) as primary_identifier ON p.person_id = primary_identifier.patient_id" +
+            " join patient_status_state pss on pss.patient_id=p.person_id" +
+            " inner join (" +
+            "            select patient_id," +
+            "                    patient_status," +
+            "                    patient_state," +
+            "                    max(date_created) date_created" +
+            "            from patient_status_state" +
+            "            GROUP BY patient_id" +
+            "        )pss2 ON pss2.patient_id=pss.patient_id AND pss2.date_created=pss.date_created AND" +
+            " pss2.patient_state<>'INACTIVE_TRANSFERRED_OUT' AND pss2.patient_state<>'INACTIVE_SUSPENDED' AND pss2.patient_state<>'INACTIVE_DEATH'" +
+            " LEFT JOIN (SELECT concat('{', group_concat((concat('\"', pit.name, '\":\"', pi.identifier, '\"')) SEPARATOR ','), '}') AS identifiers," +
+            "        patient_id" +
+            " FROM patient_identifier pi" +
+            " JOIN patient_identifier_type pit ON pi.identifier_type = pit.patient_identifier_type_id AND pi.voided IS FALSE AND pit.retired IS FALSE "+
+            " JOIN global_property gp ON gp.property = 'bahmni.primaryIdentifierType' AND gp.property_value != pit.uuid" +
+            "  GROUP BY pi.patient_id) as extra_identifiers ON p.person_id = extra_identifiers.patient_id" +
+            VISIT_JOIN +
+            " left outer join visit_attribute va on va.visit_id = v.visit_id " +
+            "   and va.attribute_type_id = (select visit_attribute_type_id from visit_attribute_type where name='Admission Status') " +
+            "   and va.voided = 0";
 	private static final String GROUP_BY_KEYWORD = " group by ";
 	public static final String ORDER_BY = " order by primary_identifier.identifier asc LIMIT :limit OFFSET :offset";
 	private static final String LIMIT_PARAM = "limit";
