@@ -104,8 +104,6 @@ public class PatientStatusBasedSearchBuilder {
 	public SQLQuery buildSqlQuery(Integer limit, Integer offset){
 		String joinWithVisit = join.replace(VISIT_JOIN, visitJoin);
 		String query = select + from + joinWithVisit + where + GROUP_BY_KEYWORD + groupBy  + orderBy;
-		log.error("SQL QUERY!!!!!");
-		log.error(query);
 		SQLQuery sqlQuery = sessionFactory.getCurrentSession()
 				.createSQLQuery(query)
 				.addScalar("uuid", StandardBasicTypes.STRING)
