@@ -28,7 +28,7 @@ public class PatientSearchBuilder {
 			"p.gender as gender, " +
 			"p.birthdate as birthDate, " +
 			"p.death_date as deathDate, " +
-			"pss2.patient_status as \"patientStatus\",\n" +
+			"pss2.patient_status as \"patientStatus\"," +
             "pss2.patient_state as \"patientState\"," +
 			"p.birthdate_estimated as birthdateEstimated, " +
 			"p.date_created as dateCreated, " +
@@ -40,7 +40,7 @@ public class PatientSearchBuilder {
 	public static final String FROM_TABLE = " from person p ";
 	public static final String JOIN_CLAUSE = " left join person_name pn on pn.person_id = p.person_id" +
 			" left join person_address pa on p.person_id=pa.person_id and pa.voided = 'false'" +
-			" join patient_status_state pss on pss.patient_id=p.person_id\n" +
+			" join patient_status_state pss on pss.patient_id=p.person_id" +
             "       inner join (" +
             "           select patient_id," +
             "                   patient_status," +
