@@ -28,8 +28,8 @@ public class PatientSearchBuilder {
 			"p.gender as gender, " +
 			"p.birthdate as birthDate, " +
 			"p.death_date as deathDate, " +
-			"pss2.patient_status as \"patientStatus\"," +
-            "pss2.patient_state as \"patientState\"," +
+			"pss.patient_status as \"patientStatus\"," +
+            "pss.patient_state as \"patientState\"," +
 			"p.birthdate_estimated as birthdateEstimated, " +
 			"p.date_created as dateCreated, " +
 			"v.uuid as activeVisitUuid, " +
