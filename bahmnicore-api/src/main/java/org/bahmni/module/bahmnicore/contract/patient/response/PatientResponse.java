@@ -25,6 +25,8 @@ public class PatientResponse {
     private String middleName;
     private String familyName;
     private String gender;
+    private String patientStatus;
+    private String patientState;
     private Date dateCreated;
     private String activeVisitUuid;
     private String customAttribute;
@@ -73,6 +75,22 @@ public class PatientResponse {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public String getPatientStatus() {
+        return patientStatus;
+    }
+
+    public void setPatientStatus(String patientStatus) {
+        this.patientStatus = patientStatus;
+    }
+
+    public String getPatientState() {
+        return patientState;
+    }
+
+    public void setPatientState(String patientState) {
+        this.patientState = patientState;
     }
 
     @JsonSerialize(using = JsonDateSerializer.class)
