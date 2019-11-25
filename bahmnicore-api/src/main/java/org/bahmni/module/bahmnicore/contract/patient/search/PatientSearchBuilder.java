@@ -19,7 +19,7 @@ public class PatientSearchBuilder {
 
 	private String visitJoin = " left outer join visit v on v.patient_id = p.person_id and v.date_stopped is null ";
 	private static String VISIT_JOIN = "_VISIT_JOIN_";
-	public static final String SELECT_STATEMENT = "select " +
+	public static final String SELECT_STATEMENT = "select DISTINCT " +
 			"p.uuid as uuid, " +
 			"p.person_id as personId, " +
 			"pn.given_name as givenName, " +
