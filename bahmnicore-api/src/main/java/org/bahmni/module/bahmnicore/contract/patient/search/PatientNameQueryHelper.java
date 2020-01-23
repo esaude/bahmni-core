@@ -1,6 +1,9 @@
 package org.bahmni.module.bahmnicore.contract.patient.search;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bahmni.module.bahmnicore.model.WildCardParameter;
+import org.openmrs.api.context.Context;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
@@ -16,6 +19,7 @@ public class PatientNameQueryHelper {
 		WildCardParameter nameParameter = WildCardParameter.create(name);
 		String nameSearchCondition = getNameSearchCondition(nameParameter);
 		where = isEmpty(nameSearchCondition) ? where : combine(where, "and", enclose(nameSearchCondition));
+		where = appendNickNameWhereClause(where);
 		return where;
 	}
 
@@ -32,6 +36,19 @@ public class PatientNameQueryHelper {
 		}
 		return query_by_name_parts;
 	}
+
+    public String appendToJoinClause(String join){
+        join += " LEFT OUTER JOIN person_attribute pa_name on pa_name.person_id = p.person_id and pa_name.person_attribute_type_id = (select pat.person_attribute_type_id from " +
+                "person_attribute_type pat where pat.name = 'NICK_NAME')  ";
+       return join;
+    }
+
+    public String appendNickNameWhereClause(String where){
+        if(StringUtils.isEmpty(name)){
+            return where;
+        }
+        return combine(where, "or", enclose(" pa_name.value like "+ "'%" + StringEscapeUtils.escapeSql(name) + "%'"));
+    }
 
 	private String combine(String query, String operator, String condition) {
 		return String.format("%s %s %s", query, operator, condition);
