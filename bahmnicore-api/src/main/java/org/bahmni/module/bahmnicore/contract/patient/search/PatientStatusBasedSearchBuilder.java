@@ -91,6 +91,7 @@ public class PatientStatusBasedSearchBuilder {
 
 	public PatientStatusBasedSearchBuilder withPatientName(String name){
 		PatientNameQueryHelper patientNameQueryHelper = new PatientNameQueryHelper(name);
+        join = patientNameQueryHelper.appendToJoinClause(join);
 		where = patientNameQueryHelper.appendToWhereClause(where);
 		return this;
 	}
